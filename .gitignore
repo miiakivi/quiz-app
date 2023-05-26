@@ -10,3 +10,9 @@ yarn-error.log
 
 # Visual Studio Code
 .vscode/
+
+# Another
+.gitignore
+.gitattributes
+.eslintrc
+package-lock.json
