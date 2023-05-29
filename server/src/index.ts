@@ -12,8 +12,8 @@ const server = new ApolloServer<ContextValue> ( {
   resolvers,
 } );
 
-async function startServer<ContextValue> () {
-  const {url} = await startStandaloneServer( server, {
+async function startServer () {
+  const { url } = await startStandaloneServer( server, {
     context: async () => {
       const { cache } = server;
       return {
@@ -24,7 +24,7 @@ async function startServer<ContextValue> () {
     },
   } );
 
-  console.log( `🚀  Server ready at ${url}` );
+  console.log( `🚀  Server ready at ${ url }` );
 
 }
 
