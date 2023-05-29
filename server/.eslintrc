@@ -10,15 +10,17 @@
       "@typescript-eslint/no-unused-vars": "warn",
       "@typescript-eslint/type-annotation-spacing": "error",
       "@typescript-eslint/space-before-function-paren": ["error", "always"],
-      // to enforce using type for object type definitions, can be type or interface 
+      // to enforce using type for object type definitions, can be type or interface
       "@typescript-eslint/consistent-type-definitions": ["warn", "type"],
       "array-bracket-spacing": [ "error", "always", { "arraysInArrays": false } ],
       "space-in-parens": [ "error", "always" ],
       "quotes": ["error", "double"],
       "indent": ["error", 2],
       "semi": ["error", "always"],
-      "comma-spacing": ["error", { "before": false, "after": true }]
-  
+      "comma-spacing": ["error", { "before": false, "after": true }],
+      "object-curly-spacing": ["error", "always"],
+      "template-curly-spacing": ["error", "always"],
+      "max-len": ["warn", { "code": 120 }]
     },
     "env": {
       "browser": true,
