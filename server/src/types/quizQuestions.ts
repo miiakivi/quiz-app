@@ -10,20 +10,20 @@ export type QuizQuestion = {
 
 export type QuestionRequestArgs = {
   args: {
-    amount?: number;
+    amount?: number | undefined;
     category?: number;
     difficulty?: Difficulty;
     type?: QuestionType;
   }
 }
 
-  enum Difficulty {
-    EASY = "easy",
-    MEDIUM = "medium",
-    HARD = "hard",
-  }
+enum Difficulty {
+  EASY = "easy",
+  MEDIUM = "medium",
+  HARD = "hard",
+}
 
-  enum QuestionType {
-    MULTIPLE = "multiple",
-    BOOLEAN = "boolean",
-  }
+enum QuestionType {
+  MULTIPLE = "multiple",
+  BOOLEAN = "boolean",
+}
