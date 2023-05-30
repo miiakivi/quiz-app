@@ -1,18 +1,14 @@
 <script setup lang="ts">
-  import { RouterLink, RouterView } from "vue-router";
+
+import QueryTest from "./views/QueryTest.vue";
+
 </script>
 
 <template>
-
-    <div class="wrapper">
-
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
-    </div>
-
-  <RouterView />
+  <div class="wrapper">
+    <h1> hello</h1>
+    <QueryTest></QueryTest>
+  </div>
 </template>
 
 <style scoped>
