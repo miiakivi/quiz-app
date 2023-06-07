@@ -8,6 +8,8 @@
 }
 
 .btn {
+  display: flex;
+  align-items: center;
   position: relative;
   font-family: 'Montserrat', sans-serif;
   font-weight: 700;
@@ -25,8 +27,31 @@
   transition: all 0.2s ease-in-out;
 }
 
+.btn svg {
+  position: absolute;
+  opacity: 0;
+  right: -20px;
+  transition: 0.5s;
+  stroke: var(--color-main-border);
+}
+
+.btn:hover {
+  padding-right: 2.5em;
+}
+
+.btn:hover svg{
+  opacity: 1;
+  right: 0.5em;
+}
+
+
+
 .btn.disabled {
   color: var(--color-disabled);
   border: var(--border-width) solid var(--color-disabled);
   cursor: not-allowed;
+}
+
+.btn.disabled {
+  stroke: var(--color-disabled);
 }
