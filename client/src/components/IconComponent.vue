@@ -1,7 +1,5 @@
 <template>
-  <div class="icon">
-    <component :is="iconComponent"></component>
-  </div>
+  <component :is="iconComponent" :class="`icon-${props.iconName}`"></component>
 </template>
 
 <script setup lang="ts">
@@ -17,9 +15,9 @@ const props = defineProps( {
 
 const iconComponent = computed<DefineComponent>( () => {
   return defineAsyncComponent( () =>
-    import( `./icons/${ props.iconName }.vue` ).catch( () => ( {
+    import( `../icons/${ props.iconName }.vue` ).catch( () => ( {
       render: (): string => {
-        console.error( `Error fetching icon from: /src/components/icons/${ props.iconName }.vue` );
+        console.error( `Error fetching icon from: /src/icons/${ props.iconName }.vue` );
         return "";
       }
     } ) )
