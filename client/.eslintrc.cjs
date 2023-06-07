@@ -16,7 +16,7 @@ module.exports = {
     sourceType: "module",
     parser: "@typescript-eslint/parser"
   },
-  plugins: [ "vue" ],
+  plugins: [ "vue", "spellcheck" ],
   rules: {
     "indent": [ "error", 2, {
       "VariableDeclarator": "first",
