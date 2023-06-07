@@ -7,3 +7,26 @@
   padding: 2rem;
 }
 
+.btn {
+  position: relative;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 1.25px;
+  text-transform: uppercase;
+  padding: 0.5em 1em;
+  border-radius: var(--border-radius);
+  outline: none;
+  background-color: var(--color-background);
+  color: var(--color-main-border);
+  border: 2.5px solid var(--color-main-border);
+  box-shadow: var(--box-shadow);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn.disabled {
+  color: var(--color-disabled);
+  border: var(--border-width) solid var(--color-disabled);
+  cursor: not-allowed;
+}
