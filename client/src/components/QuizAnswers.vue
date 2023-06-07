@@ -1,13 +1,17 @@
 <script setup lang="ts">
+import type { Option } from "../types/AnswerOption";
+import IconComponent from "./IconComponent.vue";
+import DoubleArrow from "./icons/double-arrow.vue";
 
-const answerOptions = [
-  { label: "a", option: "Suprise me",  },
-  { label: "b", option: "Select game level" },
-  { label: "c", option: "Select everything" }
-];
+type Props = {
+  answerOptions: Option[];
+}
+
+const emits = defineEmits( [ "selectAnswer" ] );
+const props = defineProps<Props>();
 
 function selectAnswer ( label: string ): void {
-  console.log( "answer selected", label );
+  emits( "selectAnswer", label );
 }
 
 </script>
@@ -15,7 +19,7 @@ function selectAnswer ( label: string ): void {
 <template>
   <div class="answers-container">
     <div
-      v-for="answer in answerOptions"
+      v-for="(answer) in props.answerOptions"
       :key="answer.label"
       @click="selectAnswer(answer.label)"
       :class="`answer answer-${answer.label}`"
@@ -27,6 +31,13 @@ function selectAnswer ( label: string ): void {
         {{ answer.option }}
       </p>
     </div>
+  </div>
+  <div class="answers--button-container">
+    <button class="btn start">
+      Let's go
+
+      <IconComponent icon-name="double-arro"/>
+    </button>
   </div>
 </template>
 
@@ -120,6 +131,13 @@ function selectAnswer ( label: string ): void {
     font-weight: 600;
     letter-spacing: .75px;
   }
+}
+
+.answers--button-container {
+  display: flex;
+  justify-content: end;
+  margin-top: 2.5rem;
+
 }
 
 </style>
