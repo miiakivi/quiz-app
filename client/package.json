@@ -15,6 +15,7 @@
   "dependencies": {
     "@apollo/client": "^3.7.14",
     "@vue/apollo-composable": "^4.0.0-beta.5",
+    "canvas-confetti": "^1.6.0",
     "eslint-config-standard-with-typescript": "^34.0.1",
     "graphql": "^15.8.0",
     "graphql-tag": "^2.12.6",
@@ -26,6 +27,7 @@
   },
   "devDependencies": {
     "@tsconfig/node18": "^2.0.1",
+    "@types/canvas-confetti": "^1.6.0",
     "@types/jsdom": "^21.1.1",
     "@types/node": "^18.16.8",
     "@vitejs/plugin-vue": "^4.2.3",
