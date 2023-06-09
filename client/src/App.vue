@@ -1,10 +1,70 @@
+<template>
+  <div class="wrapper">
+
+    <div class="main-container" >
+      <div >
+        <Transition name="slide-fade" @after-leave="onAfterLeave">
+          <div v-if="visible">
+            <QuizQuestion :question="quizOptions[currentIndex].question" />
+          </div>
+        </Transition>
+        <Transition name="slide" @after-leave="onAfterLeave">
+          <div v-if="visible">
+            <QuizAnswers
+              :answerOptions="createAnswerOptions( quizOptions[currentIndex].options )"
+              @selectAnswer="handleSelectedGameMode"/>
+          </div>
+        </Transition>
+      </div>
+      <div class="buttons-container">
+        <ButtonComponent
+          @handle-button-click="startGame"
+          label="Let's go"
+          :disabled="!gameModeSelected"/>
+      </div>
+    </div>
+
+  </div>
+</template>
+
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { reactive, ref, watch } from "vue";
+import gql from "graphql-tag";
+
+import { useLazyQuery } from "@vue/apollo-composable";
+
 import type { Option } from "./types/AnswerOption";
 
 import QuizAnswers from "./components/QuizAnswers.vue";
-import IconComponent from "./components/IconComponent.vue";
-import { answerLabels, answerOptions, difficultyOptions } from  "./data/options";
+import QuizQuestion from "./components/QuizQuestion.vue";
+import ButtonComponent from "./components/ButtonComponent.vue";
+
+import { answerLabels, gameSettings } from  "./data/options";
+
+/*
+const queryLoaded = ref( false );
+
+const GET_QUESTIONS = gql`
+  query GetRandomQuizQuestions($args: QuestionRequestArgs) {
+    getRandomQuizQuestions(args: $args) {
+      category
+      correct_answer
+      difficulty
+      incorrect_answers
+      question
+      type
+    }
+  }
+`;
+
+const { loading, error, result, load } = useLazyQuery( GET_QUESTIONS, {
+  args: {
+    "amount": 10
+  }
+} );
+*/
+
+
 
 function createAnswerOptions ( options: string[] ): Option[]  {
   return options.map( ( answer, index ) => {
@@ -12,28 +72,50 @@ function createAnswerOptions ( options: string[] ): Option[]  {
   } );
 };
 
-const optionRef = ref( createAnswerOptions( answerOptions ) );
-const selectedRef = ref( true );
+const quizOptions = reactive( gameSettings );
+
+const currentIndex = ref( 0 );
+
+const nextQuestion = (): void => {
+  currentIndex.value = ( currentIndex.value + 1 ) % gameSettings.length;
+
+};
 
 const visible = ref( true );
+const gameModeSelected = ref( false );
 
-watch( optionRef, () => {
+watch( currentIndex, () => {
   visible.value = false;
 } );
 
 const onAfterLeave = (): void => {
-  console.log( "on after leave" );
   visible.value = true;
 };
 
-function handleSelectedAnswer ( label: string ): void {
+function startGame (): void {
+  console.log( "button clicked hurraah!" );
+}
+/*
+const fetchPosts = (): void => {
+  console.log( "loading..." );
+  const firstTimeLoad = load();
 
-  switch( label ) {
+  if ( firstTimeLoad ) queryLoaded.value = firstTimeLoad;
+  console.log( "first time load", firstTimeLoad );
+};*/
+
+function handleSelectedGameMode ( label: string ): void {
+  gameModeSelected.value = true;
+
+  nextQuestion();
+  //fetchPosts();
+  switch ( label ) {
     case "a":
-      console.log( "Lets make an query" );
+      console.log( "suprise me" );
+
       return;
     case "b":
-      optionRef.value = createAnswerOptions( difficultyOptions );
+      //optionRef.value = createAnswerOptions( difficultyOptions );
       return;
     case "c":
       console.log( "select everything" );
@@ -46,55 +128,53 @@ function handleSelectedAnswer ( label: string ): void {
 
 </script>
 
-<template>
-  <div class="wrapper">
-
-    <div class="main-container" >
-      <div >
-        <Transition name="slide-fade" @after-leave="onAfterLeave">
-          <div class="question-container component-container" v-if="visible">
-            <h2 class="question--subtitle">Question</h2>
-            <p class="question--title">What kind of game you would like to play?</p>
-          </div>
-        </Transition>
-        <Transition name="slide" @after-leave="onAfterLeave">
-          <div class="component-container" v-if="visible">
-            <QuizAnswers :answerOptions="optionRef" @selectAnswer="handleSelectedAnswer"/>
-
-
-            <div class="answers--button-container">
-              <button v-if="selectedRef" class="btn btn-start">
-                Let's go
-                <IconComponent icon-name="double-arrow"/>
-              </button>
-            </div>
-          </div>
-
-
-        </Transition>
-
-      </div>
-    </div>
-
-  </div>
-</template>
-
 <style scoped lang="less">
 
+
+.wrapper {
+  display: flex;
+  justify-content: center; /* Horizontally center the container */
+  align-items: center; /* Vertically center the container */
+  height: 100%;
+  overflow: hidden;
+}
+
+.main-container {
+  width: 100%;
+  max-width: 60rem;
+  min-height: 31.25rem;
+  background-color: #232946;
+  padding: 2rem;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+
+
+  .buttons-container {
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    gap: 2rem;
+  }
+
+}
+
+
+/* --- TRANSITION --- */
 .slide-fade-enter-from {
   opacity: 0;
-  transform: translateY(-100%);
+  transform: translateY(100%);
 }
 
 .slide-fade-leave-to {
   opacity: 0;
-  transform: translateY(100%);
+  transform: translateY(-100%);
 }
 
 .slide-fade-enter-active,
 .slide-fade-leave-active {
   transition: opacity 0.3s, transform 0.3s;
 }
+
 
 .slide-enter-active,
 .slide-leave-active {
@@ -109,49 +189,6 @@ function handleSelectedAnswer ( label: string ): void {
 .slide-leave-to {
   opacity: 0;
   transform: translateX(-100%);
-}
-
-
-.wrapper {
-  display: flex;
-  justify-content: center; /* Horizontally center the container */
-  align-items: center; /* Vertically center the container */
-  height: 100%;
-}
-
-.main-container {
-  width: 100%;
-  max-width: 60rem;
-  min-height: 31.25rem;
-  background-color: #232946;
-  padding: 2rem;
-  border-radius: var(--border-radius);
-  box-shadow: var(--box-shadow);
-}
-
-.question-container {
-  padding: 1.5rem;
-  border: var(--border-width) solid var(--color-main-border);
-  border-radius: var(--border-radius);
-  text-align: center;
-
-  .question--subtitle {
-    font-size: 0.875rem;
-    text-transform: uppercase;
-    color: var(--color-main-border);
-  }
-
-  .question--title {
-    font-size: 1.25rem;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-  }
-}
-
-.answers--button-container {
-  display: flex;
-  justify-content: end;
-  margin-top: 2.5rem;
 }
 
 </style>
