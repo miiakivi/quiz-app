@@ -18,10 +18,12 @@ export default class TriviaAPI extends RESTDataSource {
     return response.category_question_count;
   }
 
-  async getQuizQuestions ( { args: { amount = 10, category, difficulty, type } }: QuestionRequestArgs ): Promise<QuizQuestion[]> {
-    if ( amount < 1 || amount > 50 ) {
+  async getQuizQuestions ( { args: { amount, category, difficulty, type } }: QuestionRequestArgs ): Promise<QuizQuestion[]> {
+
+    //console.log( "amount", amount );
+    /*if ( amount < 1 || amount > 50 ) {
       throw new GraphQLError( "Invalid value. Amount must be between 1 and 50" );
-    }
+    }*/
 
     if ( category < 9 || category > 32  ) {
       throw new GraphQLError( "Invalid value. category id must be between 9 and 32" );
