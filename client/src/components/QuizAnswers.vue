@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import type { Option } from "../types/AnswerOption";
-import IconComponent from "./IconComponent.vue";
-import DoubleArrow from "./icons/double-arrow.vue";
 
 type Props = {
   answerOptions: Option[];
@@ -32,16 +30,19 @@ function selectAnswer ( label: string ): void {
       </p>
     </div>
   </div>
-  <div class="answers--button-container">
-    <button class="btn start">
-      Let's go
-
-      <IconComponent icon-name="double-arro"/>
-    </button>
-  </div>
 </template>
 
 <style scoped lang="less">
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
 
 .answers-container {
   margin: 1rem 0;
@@ -131,13 +132,6 @@ function selectAnswer ( label: string ): void {
     font-weight: 600;
     letter-spacing: .75px;
   }
-}
-
-.answers--button-container {
-  display: flex;
-  justify-content: end;
-  margin-top: 2.5rem;
-
 }
 
 </style>
