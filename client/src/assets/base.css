@@ -29,17 +29,17 @@
   --color-main-border: #7C90F7;
   --color-disabled: #2F3761;
 
-  --color-yellow-lighter: #816642;
-  --color-yellow: #F4B13C;
+  --color-yellow-lighter: rgba(244, 177, 62, 0.66);
+  --color-yellow: rgb(244, 177, 62);
 
-  --color-pink-lighter: #8C567A;
-  --color-pink: #F582AE;
+  --color-pink-lighter: rgba(245, 130, 174, 0.66);
+  --color-pink: rgb(245, 130, 174);
 
-  --color-blue-lighter: #456F8F;
-  --color-blue: #67B4D9;
+  --color-blue-lighter: rgba(103, 180, 217, 0.66);
+  --color-blue: rgb(103, 180, 217);
 
-  --color-purple-lighter: #655892;
-  --color-purple: #A786DF;
+  --color-purple-lighter: rgba(167, 134, 223, 0.66);
+  --color-purple: rgb(167, 134, 223);
 
   --box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 

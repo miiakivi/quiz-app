@@ -50,8 +50,10 @@
   color: var(--color-disabled);
   border: var(--border-width) solid var(--color-disabled);
   cursor: not-allowed;
+  pointer-events: none;
 }
 
 .btn.disabled {
   stroke: var(--color-disabled);
 }
+
