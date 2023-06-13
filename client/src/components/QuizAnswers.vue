@@ -3,13 +3,19 @@ import type { Option } from "../types/AnswerOption";
 
 type Props = {
   answerOptions: Option[];
+  loading: boolean;
 }
 
 const emits = defineEmits( [ "selectAnswer" ] );
 const props = defineProps<Props>();
 
-function selectAnswer ( label: string ): void {
-  emits( "selectAnswer", label );
+console.log( props.answerOptions );
+
+function selectAnswer ( answerOption: string ): void {
+  if ( !props.loading ) {
+    emits( "selectAnswer", answerOption );
+  }
+
 }
 
 </script>
@@ -19,14 +25,14 @@ function selectAnswer ( label: string ): void {
     <div
       v-for="(answer) in props.answerOptions"
       :key="answer.label"
-      @click="selectAnswer(answer.label)"
+      @click="selectAnswer(answer.option)"
       :class="`answer answer-${answer.label}`"
     >
       <p class="answer--label">
         {{ answer.label }},
       </p>
       <p class="answer--option">
-        {{ answer.option }}
+        {{ props.loading ? '...loading' : answer.option }}
       </p>
     </div>
   </div>
