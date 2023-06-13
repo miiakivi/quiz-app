@@ -5,19 +5,23 @@
       <div >
         <Transition name="slide-fade" @after-leave="onAfterLeave">
           <div v-if="visible">
-            <QuizQuestion :question="quizOptions[currentIndex].question" />
+            <QuizQuestion
+              :question="quizOptions[currentIndex].question"
+              :loading="loading" />
           </div>
         </Transition>
         <Transition name="slide" @after-leave="onAfterLeave">
           <div v-if="visible">
             <QuizAnswers
               :answerOptions="createAnswerOptions( quizOptions[currentIndex].options )"
-              @selectAnswer="handleSelectedGameMode"/>
+              @selectAnswer="handleSelectedGameMode"
+              :loading="loading"/>
           </div>
         </Transition>
       </div>
       <div class="buttons-container">
         <ButtonComponent
+          v-if="!queryLoaded"
           @handle-button-click="startGame"
           label="Let's go"
           :disabled="!gameModeSelected"/>
@@ -34,6 +38,8 @@ import gql from "graphql-tag";
 import { useLazyQuery } from "@vue/apollo-composable";
 
 import type { Option } from "./types/AnswerOption";
+import type { QuizQueryResult } from "./types/QuizQuestionQuery";
+import type { QuestionType } from "./types/QuestionType";
 
 import QuizAnswers from "./components/QuizAnswers.vue";
 import QuizQuestion from "./components/QuizQuestion.vue";
@@ -41,7 +47,7 @@ import ButtonComponent from "./components/ButtonComponent.vue";
 
 import { answerLabels, gameSettings } from  "./data/options";
 
-/*
+
 const queryLoaded = ref( false );
 
 const GET_QUESTIONS = gql`
@@ -62,7 +68,6 @@ const { loading, error, result, load } = useLazyQuery( GET_QUESTIONS, {
     "amount": 10
   }
 } );
-*/
 
 
 // Watch for changes in the fetched data
@@ -108,32 +113,21 @@ const quizOptions = reactive( gameSettings );
 const currentIndex = ref( 0 );
 
 const nextQuestion = (): void => {
-  currentIndex.value = ( currentIndex.value + 1 ) % gameSettings.length;
+  currentIndex.value = ( currentIndex.value + 1 ) % quizOptions.length;
 
 };
 
 const visible = ref( true );
 const gameModeSelected = ref( false );
 
-watch( currentIndex, () => {
-  visible.value = false;
-} );
-
 const onAfterLeave = (): void => {
   visible.value = true;
 };
 
 function startGame (): void {
-  console.log( "button clicked hurraah!" );
+  load();
 }
-/*
-const fetchPosts = (): void => {
-  console.log( "loading..." );
-  const firstTimeLoad = load();
 
-  if ( firstTimeLoad ) queryLoaded.value = firstTimeLoad;
-  console.log( "first time load", firstTimeLoad );
-};*/
 function checkCorrectAnswer ( answerOption: string ): void {
   const currentQuestion = quizOptions[currentIndex.value];
 
