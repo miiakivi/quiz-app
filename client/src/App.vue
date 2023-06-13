@@ -65,6 +65,26 @@ const { loading, error, result, load } = useLazyQuery( GET_QUESTIONS, {
 */
 
 
+// Watch for changes in the fetched data
+watch( result, () => {
+
+  queryLoaded.value = true;
+  const fetchedQuestions: QuestionType[]= result.value.getRandomQuizQuestions.map( ( data: QuizQueryResult ) => {
+    return {
+      question: data.question,
+      options: shuffleArrayOrder( [ ...data.incorrect_answers, data.correct_answer ] ),
+      correctAnswer: data.correct_answer,
+      category: data.category,
+      difficulty: data.difficulty
+    };
+  } );
+
+  quizOptions.push( ...fetchedQuestions );
+
+  visible.value = false;
+  nextQuestion();
+} );
+
 
 function createAnswerOptions ( options: string[] ): Option[]  {
   return options.map( ( answer, index ) => {
@@ -72,6 +92,17 @@ function createAnswerOptions ( options: string[] ): Option[]  {
   } );
 };
 
+function shuffleArrayOrder ( arr: string[] ): string[] {
+  let shuffled = arr
+    .map( value => ( { value, sort: Math.random() } ) )
+    .sort( ( a, b ) => a.sort - b.sort )
+    .map( ( { value } ) => value );
+
+  console.log( shuffled );
+  return shuffled;
+}
+
+// Game starts with selecting game settings
 const quizOptions = reactive( gameSettings );
 
 const currentIndex = ref( 0 );
@@ -103,26 +134,24 @@ const fetchPosts = (): void => {
   if ( firstTimeLoad ) queryLoaded.value = firstTimeLoad;
   console.log( "first time load", firstTimeLoad );
 };*/
+function checkCorrectAnswer ( answerOption: string ): void {
+  const currentQuestion = quizOptions[currentIndex.value];
 
-function handleSelectedGameMode ( label: string ): void {
+  if ( currentQuestion.correctAnswer === answerOption ) {
+    console.log( "Correnct answer!" );
+  } else {
+    console.log( "wrong answer..." );
+  }
+
+}
+
+function handleSelectedGameMode ( answerOption: string ): void {
   gameModeSelected.value = true;
 
-  nextQuestion();
-  //fetchPosts();
-  switch ( label ) {
-    case "a":
-      console.log( "suprise me" );
-
-      return;
-    case "b":
-      //optionRef.value = createAnswerOptions( difficultyOptions );
-      return;
-    case "c":
-      console.log( "select everything" );
-      return;
-    case "d":
-      console.log( "nothing " );
-      return;
+  if ( queryLoaded.value ) {
+    checkCorrectAnswer( answerOption );
+    nextQuestion();
+    visible.value = false;
   }
 }
 
