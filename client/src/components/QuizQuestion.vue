@@ -1,7 +1,7 @@
 <template>
   <div class="question-container">
     <h2 class="question--subtitle">Question</h2>
-    <p class="question--title">{{ props.question }}</p>
+    <p class="question--title">{{ props.loading ? '...loading' : props.question }}</p>
   </div>
 </template>
 
@@ -9,6 +9,7 @@
 
 type Props = {
   question: string;
+  loading: boolean;
 }
 
 const props = defineProps<Props>();
