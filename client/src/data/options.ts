@@ -1,5 +1,14 @@
+import type { QuestionType } from "../types/QuestionType";
+
 export const answerLabels = [ "a", "b", "c", "d" ];
 
-export const answerOptions = [ "Suprise me",  "Select game level", "Select everything" ];
-
-export const difficultyOptions = [ "Easy", "Medium", "Hard" ];
+export const gameSettings: QuestionType[] = [
+  {
+    question: "Select your game mode",
+    options:  [ "Suprise me",  "Select game level", "Select everything" ]
+  },
+  /*{
+    question: "How brave are you?",
+    options: [ "Easy", "Medium", "Hard" ]
+  },*/
+];
