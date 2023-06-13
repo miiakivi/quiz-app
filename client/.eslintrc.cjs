@@ -16,8 +16,9 @@ module.exports = {
     sourceType: "module",
     parser: "@typescript-eslint/parser"
   },
-  plugins: [ "vue", "spellcheck" ],
+  plugins: [ "vue" ],
   rules: {
+    "keyword-spacing": [ "warn" ],
     "indent": [ "error", 2, {
       "VariableDeclarator": "first",
       "ArrayExpression": "first",
@@ -82,7 +83,7 @@ module.exports = {
     //"@typescript-eslint/no-duplicate-type-constituents": "error",'
     "@typescript-eslint/no-import-type-side-effects": "error",
     "@typescript-eslint/no-extra-non-null-assertion": "error",
-    "@typescript-eslint/explicit-function-return-type": "error",
+    "@typescript-eslint/explicit-function-return-type": "warn",
     "@typescript-eslint/no-duplicate-enum-values": "error",
     //"@typescript-eslint/consistent-type-exports": "warn",
     "@typescript-eslint/ban-types": "warn",
@@ -93,8 +94,8 @@ module.exports = {
     "@typescript-eslint/consistent-type-definitions": [ "warn", "type" ],
     "array-bracket-spacing": [ "error", "always", { arraysInArrays: false } ],
     "space-in-parens": [ "error", "always" ],
-    quotes: [ "error", "double" ],
-    semi: [ "error", "always" ],
+    quotes: [ "warn", "double" ],
+    semi: [ "warn", "always" ],
     "comma-spacing": [ "error", { before: false, after: true } ],
     "object-curly-spacing": [ "error", "always" ],
     "template-curly-spacing": [ "error", "always" ],
