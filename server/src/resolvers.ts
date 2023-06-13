@@ -11,8 +11,6 @@ const resolvers = {
       return await dataSources.triviaApi.getCategoryQuestionCount( id );
     },
     getRandomQuizQuestions: async ( _: any, questionArgs: QuestionRequestArgs, { dataSources }: ContextValue ) => {
-
-      console.log( "args", questionArgs );
       return dataSources.triviaApi.getQuizQuestions( questionArgs );
     },
   },
