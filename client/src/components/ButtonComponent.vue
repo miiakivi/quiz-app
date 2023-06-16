@@ -28,7 +28,6 @@ const props = defineProps<Props>();
 const emits = defineEmits( [ "handleButtonClick" ] );
 
 function clickEvent (): void {
-  console.log( "inside button" );
   emits( "handleButtonClick" );
 }
 

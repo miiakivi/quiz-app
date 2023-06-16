@@ -1,7 +1,5 @@
 import type { QuestionType } from "../types/QuestionType";
 
-export const answerLabels = [ "a", "b", "c", "d" ];
-
 export const gameSettings: QuestionType[] = [
   {
     question: "Select your game mode",
