@@ -1,19 +1,32 @@
 <template>
   <div class="wrapper">
+    <Transition name="slide-fade" @after-leave="onAfterLeave">
+      <div v-if="visible">
+        <QuizPoints :answered-questions="answeredQuestionsArr" :question-index="currentIndex" />
+
+      </div>
+    </Transition>
 
     <div class="main-container" >
       <div >
+        <QuizCategoryInfo
+          :question-number="`${currentIndex + 1}/${quizOptions.length}`"
+          :is-visible="visible"
+          :current-category="quizOptions[currentIndex].category"
+          :on-after-leave="onAfterLeave" />
+
         <Transition name="slide-fade" @after-leave="onAfterLeave">
           <div v-if="visible">
             <QuizQuestion
               :question="quizOptions[currentIndex].question"
               :loading="loading" />
+            <ProgressTimer :timer-duration="10"/>
           </div>
         </Transition>
         <Transition name="slide" @after-leave="onAfterLeave">
           <div v-if="visible">
             <QuizAnswers
-              :answerOptions="createAnswerOptions( quizOptions[currentIndex].options )"
+              :answerOptions="quizOptions[currentIndex]"
               @selectAnswer="handleSelectedGameMode"
               :loading="loading"/>
           </div>
@@ -33,11 +46,9 @@
 
 <script setup lang="ts">
 import { reactive, ref, watch } from "vue";
-import gql from "graphql-tag";
 
 import { useLazyQuery } from "@vue/apollo-composable";
 
-import type { Option } from "./types/AnswerOption";
 import type { QuizQueryResult } from "./types/QuizQuestionQuery";
 import type { QuestionType } from "./types/QuestionType";
 
@@ -45,23 +56,14 @@ import QuizAnswers from "./components/QuizAnswers.vue";
 import QuizQuestion from "./components/QuizQuestion.vue";
 import ButtonComponent from "./components/ButtonComponent.vue";
 
-import { answerLabels, gameSettings } from  "./data/options";
+import { gameSettings } from  "./data/options";
 
+import { shuffleArrayOrder } from "./helpers";
 
-const queryLoaded = ref( false );
-
-const GET_QUESTIONS = gql`
-  query GetRandomQuizQuestions($args: QuestionRequestArgs) {
-    getRandomQuizQuestions(args: $args) {
-      category
-      correct_answer
-      difficulty
-      incorrect_answers
-      question
-      type
-    }
-  }
-`;
+import { GET_QUESTIONS } from "./graphql/query";
+import QuizCategoryInfo from "./components/QuizCategoryInfo.vue";
+import QuizPoints from "./components/QuizPoints.vue";
+import ProgressTimer from "./components/ProgressTimer.vue";
 
 const { loading, error, result, load } = useLazyQuery( GET_QUESTIONS, {
   args: {
@@ -84,41 +86,22 @@ watch( result, () => {
     };
   } );
 
-  quizOptions.push( ...fetchedQuestions );
+  quizOptions.splice( 0, quizOptions.length, ...fetchedQuestions );
 
   visible.value = false;
-  nextQuestion();
+  answeredQuestionsArr.value = createStringArray( quizOptions.length );
+  //nextQuestion();
 } );
 
+const queryLoaded = ref( false );
 
-function createAnswerOptions ( options: string[] ): Option[]  {
-  return options.map( ( answer, index ) => {
-    return { label: answerLabels[index], option: answer };
-  } );
-};
-
-function shuffleArrayOrder ( arr: string[] ): string[] {
-  let shuffled = arr
-    .map( value => ( { value, sort: Math.random() } ) )
-    .sort( ( a, b ) => a.sort - b.sort )
-    .map( ( { value } ) => value );
-
-  console.log( shuffled );
-  return shuffled;
-}
-
-// Game starts with selecting game settings
-const quizOptions = reactive( gameSettings );
-
+const quizOptions = reactive( gameSettings ); // Game starts with selecting game settings
 const currentIndex = ref( 0 );
-
-const nextQuestion = (): void => {
-  currentIndex.value = ( currentIndex.value + 1 ) % quizOptions.length;
-
-};
-
 const visible = ref( true );
 const gameModeSelected = ref( false );
+
+// How many qiestions quiz has and has 'correct' or 'wrong' in a place already answered questions.
+const answeredQuestionsArr = ref<string[]>();
 
 const onAfterLeave = (): void => {
   visible.value = true;
@@ -128,25 +111,40 @@ function startGame (): void {
   load();
 }
 
-function checkCorrectAnswer ( answerOption: string ): void {
-  const currentQuestion = quizOptions[currentIndex.value];
+const nextQuestion = (): void => {
+  currentIndex.value = ( currentIndex.value + 1 ) % quizOptions.length;
+};
 
-  if ( currentQuestion.correctAnswer === answerOption ) {
-    console.log( "Correnct answer!" );
-  } else {
-    console.log( "wrong answer..." );
-  }
 
-}
-
-function handleSelectedGameMode ( answerOption: string ): void {
+function handleSelectedGameMode ( answerOption: string, selectedRightAnswer: boolean ): void {
   gameModeSelected.value = true;
 
   if ( queryLoaded.value ) {
-    checkCorrectAnswer( answerOption );
-    nextQuestion();
-    visible.value = false;
+
+    if ( answeredQuestionsArr.value ) {
+      answeredQuestionsArr.value[currentIndex.value] = selectedRightAnswer ? "correct" : "wrong";
+    }
+
+    waitAndRunNextQuestion();
   }
+}
+
+async function waitAndRunNextQuestion (): Promise<void> {
+  await new Promise( resolve => setTimeout( resolve, 1250 ) ); // Wait for 3 seconds
+
+  // Run the nextQuestion() function
+  nextQuestion();
+
+  // Update the visible value to false
+  visible.value = false;
+}
+
+function createStringArray ( num: number ): string[] {
+  if ( typeof num !== "number" || !Number.isInteger( num ) || num < 0 ) {
+    throw new Error( "Input must be a non-negative integer" );
+  }
+
+  return Array( num ).fill( "" );
 }
 
 </script>
@@ -158,6 +156,7 @@ function handleSelectedGameMode ( answerOption: string ): void {
   display: flex;
   justify-content: center; /* Horizontally center the container */
   align-items: center; /* Vertically center the container */
+flex-direction: column;
   height: 100%;
   overflow: hidden;
 }
@@ -181,8 +180,18 @@ function handleSelectedGameMode ( answerOption: string ): void {
 
 }
 
-
 /* --- TRANSITION --- */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease-in-out;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+
 .slide-fade-enter-from {
   opacity: 0;
   transform: translateY(100%);
