@@ -1,21 +1,38 @@
 <script setup lang="ts">
-import type { Option } from "../types/AnswerOption";
-
+import type { QuestionType } from "@/types/QuestionType";
+import { ref } from "vue";
 type Props = {
-  answerOptions: Option[];
+  answerOptions: QuestionType;
   loading: boolean;
 }
 
 const emits = defineEmits( [ "selectAnswer" ] );
 const props = defineProps<Props>();
 
-console.log( props.answerOptions );
+const answerLabels = [ "a", "b", "c", "d" ];
+
+const clickedAnswer = ref( "" );
 
 function selectAnswer ( answerOption: string ): void {
   if ( !props.loading ) {
-    emits( "selectAnswer", answerOption );
-  }
 
+    clickedAnswer.value = answerOption;
+
+    const selectedCorrectAnswer = answerOption === props.answerOptions.correctAnswer;
+
+    emits( "selectAnswer", answerOption, selectedCorrectAnswer );
+  }
+}
+
+function checkAnswer ( answer: string ): string | void {
+  const correctAnswer = props.answerOptions.correctAnswer;
+  if ( correctAnswer ) {
+    if ( answer === correctAnswer ) {
+      return answer === clickedAnswer.value ? "Clicked correct" : "correct";
+    } else if ( answer !== correctAnswer ) {
+      return answer === clickedAnswer.value ? "Clicked wrong" : "wrong";
+    }
+  }
 }
 
 </script>
@@ -23,16 +40,17 @@ function selectAnswer ( answerOption: string ): void {
 <template>
   <div class="answers-container">
     <div
-      v-for="(answer) in props.answerOptions"
-      :key="answer.label"
-      @click="selectAnswer(answer.option)"
-      :class="`answer answer-${answer.label}`"
+      v-for="(answer, index) in props.answerOptions.options"
+      :key="answerLabels[index]"
+      @click="selectAnswer(answer)"
+      :class="`answer answer-${answerLabels[index]}`"
     >
+      <div v-if="clickedAnswer">{{ checkAnswer(answer) }}</div>
       <p class="answer--label">
-        {{ answer.label }},
+        {{ answerLabels[index] }},
       </p>
       <p class="answer--option">
-        {{ props.loading ? '...loading' : answer.option }}
+        {{ props.loading ? '...loading' : answer }}
       </p>
     </div>
   </div>
