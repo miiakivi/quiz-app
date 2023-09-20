@@ -1,10 +1,9 @@
 <template>
-  <div>
+  <div v-show="!loading">
     <div class="progress-bar-container">
       <div class="progress-bar" :style="{ width: progress + '%'}" ></div>
     </div>
     <button @click="toggleTimer">{{ timerRunning ? 'Stop' : 'Start' }} Timer</button>
-
   </div>
 </template>
 
@@ -13,6 +12,7 @@ import { ref, watch, onBeforeUnmount } from "vue";
 
 type Props = {
   timerDuration: number,
+  loading: boolean;
 }
 
 const props = defineProps<Props>();
@@ -81,4 +81,13 @@ startTimer();
   background-image: linear-gradient(to right, #232946, #2b3456, #334066, #3b4c77, #435888, #496197, #506aa6, #5673b5, #5e7ac6, #6782d6, #7189e7, #7c90f7);
   transition: all 1s linear;
 }
+
+.red-border {
+  border: 2px solid red;
+}
+
+.blue-border {
+  border: 2px solid rgb(0, 123, 255);
+}
+
 </style>

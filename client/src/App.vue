@@ -20,9 +20,15 @@
             <QuizQuestion
               :question="quizOptions[currentIndex].question"
               :loading="loading" />
-            <ProgressTimer :timer-duration="10"/>
           </div>
         </Transition>
+
+        <Transition name="slide-fade" @after-leave="onAfterLeave">
+          <div v-if="visible && gameStarted">
+            <ProgressTimer :loading="loading" :timer-duration="10"/>
+          </div>
+        </Transition>
+
         <Transition name="slide" @after-leave="onAfterLeave">
           <div v-if="visible">
             <QuizAnswers
@@ -93,6 +99,8 @@ watch( result, () => {
   //nextQuestion();
 } );
 
+const gameStarted = ref( false );
+
 const queryLoaded = ref( false );
 
 const quizOptions = reactive( gameSettings ); // Game starts with selecting game settings
@@ -108,7 +116,9 @@ const onAfterLeave = (): void => {
 };
 
 function startGame (): void {
+  // Load questions and start game
   load();
+  gameStarted.value = true;
 }
 
 const nextQuestion = (): void => {
