@@ -3,6 +3,8 @@
     <div class="progress-bar-container">
       <div class="progress-bar" :style="{ width: progress + '%'}" ></div>
     </div>
+    <button @click="toggleTimer">{{ timerRunning ? 'Stop' : 'Start' }} Timer</button>
+
   </div>
 </template>
 
@@ -17,6 +19,7 @@ const props = defineProps<Props>();
 
 const time = ref( props.timerDuration ); // Current time in seconds
 const interval = ref<number | null>( null );
+const timerRunning = ref( true );
 
 const progress = ref( 0 );
 
@@ -40,6 +43,15 @@ const endTimer = (): void => {
   console.log( "game over" );
   clearInterval( interval.value! ); // Add "!" to assert non-null value
   // Timer has ended, perform any necessary actions here
+};
+
+const toggleTimer = (): void => {
+  if ( timerRunning.value ) {
+    clearInterval( interval.value! );
+  } else {
+    startTimer();
+  }
+  timerRunning.value = !timerRunning.value;
 };
 
 onBeforeUnmount( () => {

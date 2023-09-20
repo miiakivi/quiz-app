@@ -1,17 +1,4 @@
 <template>
-  <!--
-<TransitionGroup name="fade">
-    <div v-if="props.answeredQuestions" class="points-container">
-      <div class="flex" v-for="(answer, index) in props.answeredQuestions" :key="index">
-        <IconComponent v-if="answer === 'correct'" icon-name="check-mark" />
-        <IconComponent v-else-if="answer === 'wrong'" icon-name="close-mark" />
-        <IconComponent v-else-if="index === props.questionIndex" icon-name="question-mark" />
-        <IconComponent v-else icon-name="question-mark--light" />
-      </div>
-    </div>
-  </TransitionGroup>
--->
-
   <div v-if="props.answeredQuestions" class="points-container">
     <transition-group name="fade">
       <div class="flex" v-for="(answer, index) in props.answeredQuestions" :key="index">
@@ -37,15 +24,6 @@ import IconComponent from "./IconComponent.vue";
 type Props = {
   answeredQuestions: string[] | undefined;
   questionIndex: number;
-}
-/*
-type Props = {
-  answeredQuestions: string[] | undefined,
-  questionIndex: number,
-}*/
-
-type IconProps = {
-  iconName: string;
 }
 
 const props = defineProps<Props>();
