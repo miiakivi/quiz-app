@@ -1,3 +1,23 @@
+<template>
+  <div class="answers-container">
+    <div
+      v-for="(answer, index) in props.answerOptions.options"
+      :key="answerLabels[index]"
+      @click="selectAnswer(answer)"
+      class="answer"
+      :class="`answer-${answerLabels[index]}`"
+    >
+      <div v-if="clickedAnswer">{{ checkAnswer(answer) }}</div>
+      <p class="answer--label">
+        {{ answerLabels[index] }},
+      </p>
+      <p class="answer--option">
+        {{ props.loading ? '...loading' : answer }}
+      </p>
+    </div>
+  </div>
+</template>
+
 <script setup lang="ts">
 import type { QuestionType } from "@/types/QuestionType";
 import { ref } from "vue";
@@ -36,25 +56,6 @@ function checkAnswer ( answer: string ): string | void {
 }
 
 </script>
-
-<template>
-  <div class="answers-container">
-    <div
-      v-for="(answer, index) in props.answerOptions.options"
-      :key="answerLabels[index]"
-      @click="selectAnswer(answer)"
-      :class="`answer answer-${answerLabels[index]}`"
-    >
-      <div v-if="clickedAnswer">{{ checkAnswer(answer) }}</div>
-      <p class="answer--label">
-        {{ answerLabels[index] }},
-      </p>
-      <p class="answer--option">
-        {{ props.loading ? '...loading' : answer }}
-      </p>
-    </div>
-  </div>
-</template>
 
 <style scoped lang="less">
 
