@@ -1,26 +1,26 @@
 <template>
   <div class="answers-container">
     <div
-      v-for="(answer, index) in props.answerOptions.options"
+      v-for="(answerOption, index) in props.answerOptions.options"
       :key="answerLabels[index]"
-      @click="selectAnswer(answer)"
+      @click="selectAnswer(answerOption)"
       class="answer"
-      :class="`answer-${answerLabels[index]}`"
+      :class="['answer-' + answerLabels[index], getAnswerStatusClass(answerOption)]"
     >
-      <div v-if="clickedAnswer">{{ checkAnswer(answer) }}</div>
-      <p class="answer--label">
-        {{ answerLabels[index] }},
-      </p>
-      <p class="answer--option">
-        {{ props.loading ? '...loading' : answer }}
-      </p>
+      <p class="answer--label" v-if="shouldLabelShow(answerOption)">{{ answerLabels[index] }},</p>
+      <IconComponent v-else :icon-name="getIconName(answerOption)" />
+
+      <p class="answer--option">{{ props.loading ? '...loading' : answerOption }}</p>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import type { QuestionType } from "@/types/QuestionType";
+import IconComponent from "./IconComponent.vue";
+
 import { ref } from "vue";
+
 type Props = {
   answerOptions: QuestionType;
   loading: boolean;
@@ -30,29 +30,50 @@ const emits = defineEmits( [ "selectAnswer" ] );
 const props = defineProps<Props>();
 
 const answerLabels = [ "a", "b", "c", "d" ];
-
 const clickedAnswer = ref( "" );
+const correctAnswer = ref( props.answerOptions.correctAnswer );
+const answerSelected = ref( false );
+
+function shouldLabelShow ( answerOption: string ): boolean {
+  const [ isCorrect, isClicked ] = checkAnswerOption( answerOption );
+  return !answerSelected.value || ( !isClicked && !isCorrect );
+}
+
+function getIconName ( answerOption: string ): string {
+  const [ isCorrect, isClicked ] = checkAnswerOption( answerOption );
+
+  if ( answerSelected.value ) {
+    return isClicked ? ( isCorrect ? "check-mark" : "close-mark" ) : ( isCorrect ? "check-mark" : "" );
+  }
+
+  return "";
+}
+
+function getAnswerStatusClass ( answerOption: string ): string {
+  const [ isCorrect, isClicked ] = checkAnswerOption( answerOption );
+
+  if ( answerSelected.value ) {
+    return isClicked ? ( isCorrect ? "correct" : "incorrect" ) : ( isCorrect ? "correct not-clicked" : "deactive" );
+  }
+
+  return "";
+}
+
 
 function selectAnswer ( answerOption: string ): void {
   if ( !props.loading ) {
 
     clickedAnswer.value = answerOption;
+    answerSelected.value = true;
 
-    const selectedCorrectAnswer = answerOption === props.answerOptions.correctAnswer;
-
+    const selectedCorrectAnswer = answerOption === correctAnswer.value;
     emits( "selectAnswer", answerOption, selectedCorrectAnswer );
   }
 }
 
-function checkAnswer ( answer: string ): string | void {
-  const correctAnswer = props.answerOptions.correctAnswer;
-  if ( correctAnswer ) {
-    if ( answer === correctAnswer ) {
-      return answer === clickedAnswer.value ? "Clicked correct" : "correct";
-    } else if ( answer !== correctAnswer ) {
-      return answer === clickedAnswer.value ? "Clicked wrong" : "wrong";
-    }
-  }
+// checks if given answerOption is the clicked answer correct Answer
+function checkAnswerOption ( answerOption: string ): boolean[] {
+  return [ answerOption === correctAnswer.value, answerOption === clickedAnswer.value ];
 }
 
 </script>
@@ -79,10 +100,42 @@ function checkAnswer ( answer: string ): string | void {
     padding: 0.75rem;
     margin: 1rem 0;
     cursor: pointer;
+    border: 2px solid transparent;
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
-    transition: all 0.2s ease-in-out;
+    transition: all 0.3s ease-in-out;
+  }
 
+  .answer.correct.not-clicked {
+    border-color: var(--color-correct);
+    opacity: 0.70;
+    pointer-events: none;
+  }
+
+  .answer.correct, .answer.answer.incorrect {
+    svg {
+      width: 1.75rem;
+      height: 1.75rem;
+    }
+  }
+
+  .answer.correct {
+    border-color: var(--color-correct);
+    pointer-events: none;
+  }
+
+  .answer.incorrect {
+    border-color: var(--color-incorrect);
+    pointer-events: none;
+  }
+
+  .answer.deactive {
+    border-color: var(--color-disabled);
+    pointer-events: none;
+    box-shadow: none;
+    .answer--label, .answer--option {
+      color: var(--color-disabled);
+    }
   }
 
   .answer-a {
