@@ -1,6 +1,7 @@
+
 <template>
   <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="11" cy="11" r="8.25" stroke="#F4B13C" stroke-width="2"/>
-    <path d="M7.33332 11L10 14L14.6667 8.25" stroke="#F4B13C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="11" cy="11" r="8.25" stroke="#01BD60" stroke-width="2"/>
+    <path d="M7.33332 11L10 14L14.6667 8.25" stroke="#01BD60" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
   </svg>
 </template>
