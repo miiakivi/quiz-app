@@ -25,7 +25,7 @@
 
         <Transition name="slide-fade" @after-leave="onAfterLeave">
           <div v-if="visible && gameStarted">
-            <ProgressTimer :loading="loading" :timer-duration="10"/>
+            <ProgressTimer :pause-timer="pauseTimer" :loading="loading" :timer-duration="10"/>
           </div>
         </Transition>
 
@@ -33,7 +33,7 @@
           <div v-if="visible">
             <QuizAnswers
               :answerOptions="quizOptions[currentIndex]"
-              @selectAnswer="handleSelectedGameMode"
+              @selectAnswer="handleNextQuestion"
               :loading="loading"/>
           </div>
         </Transition>
@@ -78,6 +78,7 @@ const { loading, error, result, load } = useLazyQuery( GET_QUESTIONS, {
 } );
 
 
+
 // Watch for changes in the fetched data
 watch( result, () => {
 
@@ -99,6 +100,7 @@ watch( result, () => {
   //nextQuestion();
 } );
 
+const pauseTimer = ref( false );
 const gameStarted = ref( false );
 
 const queryLoaded = ref( false );
@@ -111,6 +113,11 @@ const gameModeSelected = ref( false );
 // How many qiestions quiz has and has 'correct' or 'wrong' in a place already answered questions.
 const answeredQuestionsArr = ref<string[]>();
 
+watch( pauseTimer, ( newValue ) => {
+  console.log( "pause happened on parent", pauseTimer.value );
+} );
+
+
 const onAfterLeave = (): void => {
   visible.value = true;
 };
@@ -122,16 +129,25 @@ function startGame (): void {
 }
 
 const nextQuestion = (): void => {
+  pauseTimer.value = false;
   currentIndex.value = ( currentIndex.value + 1 ) % quizOptions.length;
 };
 
-
-function handleSelectedGameMode ( answerOption: string, selectedRightAnswer: boolean ): void {
+function handleGameModeSelection (): void {
   gameModeSelected.value = true;
+}
 
+
+function handleNextQuestion ( answerOption: string, selectedRightAnswer: boolean ): void {
+
+  if ( !gameModeSelected.value ) handleGameModeSelection();
+
+  // Questions from db fetched
   if ( queryLoaded.value ) {
 
     if ( answeredQuestionsArr.value ) {
+      pauseTimer.value = true;
+      // Add string to arr to indicate correct or wrongly answered question
       answeredQuestionsArr.value[currentIndex.value] = selectedRightAnswer ? "correct" : "wrong";
     }
 

@@ -8,14 +8,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onBeforeUnmount } from "vue";
+import { ref, toRefs, watch, onBeforeUnmount } from "vue";
 
 type Props = {
   timerDuration: number,
   loading: boolean;
+  pauseTimer: boolean;
 }
 
 const props = defineProps<Props>();
+
+const { pauseTimer } = toRefs( props );
 
 const time = ref( props.timerDuration ); // Current time in seconds
 const interval = ref<number | null>( null );
@@ -23,10 +26,15 @@ const timerRunning = ref( true );
 
 const progress = ref( 0 );
 
+watch( pauseTimer, ( ) => {
+  if ( timerRunning.value ) {
+    clearInterval( interval.value! );
+  }
+  timerRunning.value = !timerRunning.value;
+} );
+
 watch( time, () => {
   progress.value = ( ( props.timerDuration - time.value ) / props.timerDuration ) * 100;
-  console.log( progress.value );
-
 } );
 
 const startTimer = (): void => {
