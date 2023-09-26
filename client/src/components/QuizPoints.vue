@@ -34,7 +34,6 @@ const getIconName = ( answer: string, index: number ): string => {
   } else if ( answer === "wrong" ) {
     return "close-mark";
   } else if ( index === props.questionIndex ) {
-    console.log( "current found" );
     return "question-mark";
   } else {
     return "question-mark--light";
@@ -46,7 +45,6 @@ const getIconKey = ( answer: string, index: number ): string => {
 };
 
 const beforeEnter = ( el: HTMLElement ): void => {
-  console.log( "beforeEnter" );
   el.style.opacity = "0"; // Set initial opacity to 0 before entering
 };
 

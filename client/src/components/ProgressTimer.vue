@@ -3,7 +3,6 @@
     <div class="progress-bar-container">
       <div class="progress-bar" :style="{ width: progress + '%'}" ></div>
     </div>
-    <button @click="toggleTimer">{{ timerRunning ? 'Stop' : 'Start' }} Timer</button>
   </div>
 </template>
 
