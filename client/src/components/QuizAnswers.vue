@@ -1,5 +1,6 @@
 <template>
   <div class="answers-container">
+
     <div
       v-for="(answerOption, index) in props.answerOptions.options"
       :key="answerLabels[index]"
@@ -7,11 +8,18 @@
       class="answer"
       :class="['answer-' + answerLabels[index], getAnswerStatusClass(answerOption)]"
     >
-      <p class="answer--label" v-if="shouldLabelShow(answerOption)">{{ answerLabels[index] }},</p>
-      <IconComponent v-else :icon-name="getIconName(answerOption)" />
+      <Transition name="slide-up" mode="out-in">
+        <p class="answer--label" v-if="shouldLabelShow(answerOption)">{{ answerLabels[index] }},</p>
+        <IconComponent v-else :icon-name="getIconName(answerOption)" />
+      </Transition>
+      <Transition name="slide-up" mode="out-in">
+        <p class="answer--option" v-if="props.loading">...loading</p>
+        <p class="answer--option" v-else>{{ answerOption }}</p>
+      </Transition>
 
-      <p class="answer--option">{{ props.loading ? '...loading' : answerOption }}</p>
+
     </div>
+
   </div>
 </template>
 
@@ -80,14 +88,20 @@ function checkAnswerOption ( answerOption: string ): boolean[] {
 
 <style scoped lang="less">
 
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.5s;
+
+.slide-up-enter-active,
+.slide-up-leave-active {
+  transition: all 0.3s ease-in-out;
 }
 
-.fade-enter-from,
-.fade-leave-to {
+.slide-up-enter-from {
   opacity: 0;
+  transform: translateY(30px);
+}
+
+.slide-up-leave-to {
+  opacity: 0;
+  transform: translateY(-30px);
 }
 
 .answers-container {
@@ -99,6 +113,7 @@ function checkAnswerOption ( answerOption: string ): boolean[] {
     gap: 1rem;
     padding: 0.75rem;
     margin: 1rem 0;
+    height: 3.5rem;
     cursor: pointer;
     border: 2px solid transparent;
     border-radius: var(--border-radius);
@@ -114,8 +129,8 @@ function checkAnswerOption ( answerOption: string ): boolean[] {
 
   .answer.correct, .answer.answer.incorrect {
     svg {
-      width: 1.75rem;
-      height: 1.75rem;
+      width: 1.875rem;
+      height: 1.875rem;
     }
   }
 
@@ -202,13 +217,16 @@ function checkAnswerOption ( answerOption: string ): boolean[] {
     font-weight: 700;
     text-transform: uppercase;
     font-size: 1.25rem;
-    transition: all 0.2s ease-in-out;
+    width: 1.875rem;
+    transition: all 0.3s ease-in-out;
 
   }
 
   .answer--option {
     font-weight: 600;
     letter-spacing: .75px;
+    transition: all 0.3s ease-in-out;
+
   }
 }
 
