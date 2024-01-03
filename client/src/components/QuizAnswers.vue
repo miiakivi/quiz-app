@@ -16,10 +16,7 @@
         <p class="answer--option" v-if="props.loading">...loading</p>
         <p class="answer--option" v-else>{{ answerOption }}</p>
       </Transition>
-
-
     </div>
-
   </div>
 </template>
 
@@ -28,10 +25,12 @@ import type { QuestionType } from "@/types/QuestionType";
 import IconComponent from "./IconComponent.vue";
 
 import { ref } from "vue";
+import { gameSettings } from "@/data/options";
 
 type Props = {
   answerOptions: QuestionType;
   loading: boolean;
+  gameStarted: boolean;
 }
 
 const emits = defineEmits( [ "selectAnswer" ] );
@@ -41,6 +40,7 @@ const answerLabels = [ "a", "b", "c", "d" ];
 const clickedAnswer = ref( "" );
 const correctAnswer = ref( props.answerOptions.correctAnswer );
 const answerSelected = ref( false );
+
 
 function shouldLabelShow ( answerOption: string ): boolean {
   const [ isCorrect, isClicked ] = checkAnswerOption( answerOption );
@@ -58,6 +58,7 @@ function getIconName ( answerOption: string ): string {
 }
 
 function getAnswerStatusClass ( answerOption: string ): string {
+
   const [ isCorrect, isClicked ] = checkAnswerOption( answerOption );
 
   if ( answerSelected.value ) {
@@ -67,15 +68,22 @@ function getAnswerStatusClass ( answerOption: string ): string {
   return "";
 }
 
-
 function selectAnswer ( answerOption: string ): void {
   if ( !props.loading ) {
 
     clickedAnswer.value = answerOption;
+
     answerSelected.value = true;
 
-    const selectedCorrectAnswer = answerOption === correctAnswer.value;
-    emits( "selectAnswer", answerOption, selectedCorrectAnswer );
+    // If game has not started yet, the game settings are being selected. The clicked option is the right answer always
+    if ( !props.gameStarted ) {
+      correctAnswer.value = clickedAnswer.value;
+      emits( "selectAnswer", answerOption, true );
+    } else {
+      const selectedCorrectAnswer = answerOption === correctAnswer.value;
+      emits( "selectAnswer", answerOption, selectedCorrectAnswer );
+    }
+
   }
 }
 

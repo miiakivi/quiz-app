@@ -34,13 +34,15 @@
             <QuizAnswers
               :answerOptions="quizOptions[currentIndex]"
               @selectAnswer="handleNextQuestion"
-              :loading="loading"/>
+              :loading="loading"
+              :game-started="isGameStarted()"/>
+
           </div>
         </Transition>
       </div>
       <div class="buttons-container">
         <ButtonComponent
-          v-if="!queryLoaded"
+          v-if="gameModeSelected"
           @handle-button-click="startGame"
           label="Let's go"
           :disabled="!gameModeSelected"/>
@@ -51,6 +53,7 @@
 </template>
 
 <script setup lang="ts">
+
 import { reactive, ref, watch } from "vue";
 
 import { useLazyQuery } from "@vue/apollo-composable";
@@ -76,8 +79,6 @@ const { loading, error, result, load } = useLazyQuery( GET_QUESTIONS, {
     "amount": 10
   }
 } );
-
-
 
 // Watch for changes in the fetched data
 watch( result, () => {
@@ -113,10 +114,9 @@ const gameModeSelected = ref( false );
 // How many qiestions quiz has and has 'correct' or 'wrong' in a place already answered questions.
 const answeredQuestionsArr = ref<string[]>();
 
-watch( pauseTimer, ( newValue ) => {
-  console.log( "pause happened on parent", pauseTimer.value );
-} );
-
+const isGameStarted = (): boolean => {
+  return gameStarted.value;
+};
 
 const onAfterLeave = (): void => {
   visible.value = true;
@@ -140,6 +140,7 @@ function handleGameModeSelection (): void {
 
 function handleNextQuestion ( answerOption: string, selectedRightAnswer: boolean ): void {
 
+  // What is gameMode?
   if ( !gameModeSelected.value ) handleGameModeSelection();
 
   // Questions from db fetched
