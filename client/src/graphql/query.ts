@@ -12,3 +12,12 @@ export const GET_QUESTIONS = gql`
     }
   }
 `;
+
+export const GET_QUIZ_CATEGORIES = gql`
+  query getAllCategories {
+    getAllCategories {
+      id
+      name
+    }
+  }
+`;
