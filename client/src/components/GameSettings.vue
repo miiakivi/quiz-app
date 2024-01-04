@@ -1,18 +1,21 @@
 <template>
-  <div>
+  <div class="game-settings__container">
     <CustomSelect
       :options="quizDifficulty"
       :default="'select'"
+      title="Difficulty"
       @input="inputSelected"
     />
     <CustomSelect
       :options="quizDifficulty"
       :default="'select'"
+      title="Category"
       @input="inputSelected"
     />
     <CustomSelect
       :options="quizDifficulty"
       :default="'select'"
+      title="Amount"
       @input="inputSelected"
     />
   </div>
@@ -41,4 +44,19 @@ const inputSelected = ( input: string ): void => {
   console.log( "selected input:", input );
 };
 
-</script>../data/quizz-difficulty
+</script>
+
+<style scoped lang="less">
+
+
+.game-settings__container {
+
+    @media(min-width: 500px) {
+      display: flex;
+      justify-content: space-between;
+      gap: 2rem;
+      margin-top: 2rem;
+  }
+}
+
+</style>
