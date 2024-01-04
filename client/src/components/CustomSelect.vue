@@ -1,37 +1,43 @@
 <template>
   <div class="select-container">
+    <p class="select-container__title">{{ props.title }}</p>
+    <div class="flex-container">
 
-    <div class="select-container__title">
-      <p>Title</p>
-    </div>
-    <div class="select-dropdown" @blur="open = false">
-      <div class="select-dropdown__selected" :class="{ open: open }" @click="open = !open">
-        {{ selected }}
-      </div>
-      <div class="select-dropdown__options" :class="{ selectHide: !open }">
-        <div
-          v-for="(option, i) of options"
-          :key="i"
-          @click="
-            handleOptionClick(option);
-          "
-        >
-          {{ option }}
+      <IconComponent icon-name="check-mark--light"/>
+
+      <div class="select-dropdown" @blur="open = false">
+        <div class="select-dropdown__selected" :class="{ open: open }" @click="open = !open">
+          {{ selected }}
+        </div>
+        <div class="select-dropdown__options" :class="{ selectHide: !open }">
+          <div
+            v-for="(option, i) of options"
+            :key="i"
+            @click="
+              handleOptionClick(option);
+            "
+          >
+            {{ option }}
+          </div>
         </div>
       </div>
     </div>
-
   </div>
+
+
+
 
 
 </template>
 
 <script setup lang="ts">
 import { ref, defineProps, defineEmits } from "vue";
+import IconComponent from "./IconComponent.vue";
 
 type Props = {
   options: string[],
   default: string,
+  title: string,
 }
 
 const props = defineProps<Props>();
@@ -55,6 +61,25 @@ const handleOptionClick = ( option: string ): void => {
 </script>
 
 <style scoped lang="less">
+
+.flex-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.select-container {
+  width: 100%;
+  //max-width: 15rem;
+
+  .select-container__title {
+    font-size: 1.2rem;
+    text-transform: capitalize;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin: 0.5rem 0 0.25rem 2rem;
+  }
+}
 .select-dropdown {
   position: relative;
   width: 100%;
@@ -72,6 +97,11 @@ const handleOptionClick = ( option: string ): void => {
       padding-left: 1em;
       cursor: pointer;
       user-select: none;
+      text-transform: uppercase;
+      color: var(--color-pink);
+      font-weight: 900;
+      letter-spacing: 1px;
+      padding: 0.75rem 0;
 
     .open {
       border: 1px solid #ad8225;
@@ -91,26 +121,24 @@ const handleOptionClick = ( option: string ): void => {
   }
 
   .select-dropdown__options {
-    color: #fff;
-    border-radius: 0px 0px 6px 6px;
+    border-radius: var(--border-radius);
     overflow: hidden;
-    border-right: 1px solid #ad8225;
-    border-left: 1px solid #ad8225;
-    border-bottom: 1px solid #ad8225;
     position: absolute;
-    background-color: #0a0a0a;
+    background-color: #292f52;
+    box-shadow: var(--box-shadow);
     left: 0;
     right: 0;
     z-index: 1;
 
     div {
-      color: #fff;
+      font-weight: 700;
+      letter-spacing: .75px;
       padding-left: 1em;
       cursor: pointer;
       user-select: none;
 
       &:hover {
-        background-color: #ad8225;
+        background-color: var(--color-pink);
       }
     }
   }
