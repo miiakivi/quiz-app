@@ -33,10 +33,30 @@ import CustomSelect from "./CustomSelect.vue";
 
 import { GET_QUIZ_CATEGORIES } from "../graphql/query";
 
+import type { SelectOptionType } from "@/types/SelectOptionType";
 const { loading, error, result } = useQuery( GET_QUIZ_CATEGORIES );
 
+
+const gameDifficulty: SelectOptionType[] = quizDifficulty.map( ( name: string, index: number ) => {
+  return {
+    id: index,
+    name
+  };
+} );
 watch( result, () => {
-  console.log( "category results", result.value );
+
+
+  const fetchedCategories = result.value.getAllCategories.map( ( data: SelectOptionType )  => {
+    return {
+      id: data.id,
+      name: data.name
+    };
+  } ).sort( ( a: SelectOptionType, b: SelectOptionType ) => a.name.localeCompare( b.name ) );
+
+  console.log( "category results", fetchedCategories );
+
+  quizCategories.value = fetchedCategories;
+
 } );
 
 console.log( quizDifficulty );
