@@ -83,11 +83,19 @@ import { GET_QUESTIONS } from "./graphql/query";
 import QuizCategoryInfo from "./components/QuizCategoryInfo.vue";
 import QuizPoints from "./components/QuizPoints.vue";
 import ProgressTimer from "./components/ProgressTimer.vue";
+import ConfettiExplosion from "./components/ConfettiExplosion.vue";
+
+type QuizQuestionArgs = {
+  amount: number,
+  category?: number,
+  difficulty?: string,
+}
+const questionArgs: QuizQuestionArgs = {
+  amount: 10,
+} ;
 
 const { loading, error, result, load } = useLazyQuery( GET_QUESTIONS, {
-  args: {
-    "amount": 10
-  }
+  args: questionArgs,
 } );
 
 
@@ -140,8 +148,12 @@ const isGameStarted = (): boolean => {
   return gameStarted.value;
 };
 
-const gameSettingsSelected = (): void => {
-  console.log( "game settings selected" );
+const gameSettingsSelected = ( amount: SelectOptionType, category: SelectOptionType, difficulty: SelectOptionType ): void => {
+
+  questionArgs.category = category.id;
+  questionArgs.amount = 10;
+  questionArgs.difficulty = difficulty.name.toLowerCase();
+
   gameModeSelected.value = true;
 };
 
