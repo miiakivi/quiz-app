@@ -85,6 +85,18 @@ const { loading, error, result, load } = useLazyQuery( GET_QUESTIONS, {
   }
 } );
 
+
+
+watch( error, () => {
+  console.error( "--------error happended.", error.value?.message );
+  console.log( error );
+} );
+
+
+
+
+
+
 // Watch for changes in the fetched data
 watch( result, () => {
 
