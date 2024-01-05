@@ -34,6 +34,9 @@ import CustomSelect from "./CustomSelect.vue";
 import { GET_QUIZ_CATEGORIES } from "../graphql/query";
 
 import type { SelectOptionType } from "@/types/SelectOptionType";
+
+const emits = defineEmits( [ "settingsSelected" ] );
+
 const { loading, error, result } = useQuery( GET_QUIZ_CATEGORIES );
 
 
@@ -43,6 +46,11 @@ const gameDifficulty: SelectOptionType[] = quizDifficulty.map( ( name: string, i
     name
   };
 } );
+
+let selectedDifficulty: SelectOptionType | null = null;
+let selectedCategory: SelectOptionType | null = null;
+let selectedAmount: SelectOptionType | null = null;
+
 watch( result, () => {
 
 
@@ -59,10 +67,28 @@ watch( result, () => {
 
 } );
 
-console.log( quizDifficulty );
 
-const inputSelected = ( input: string ): void => {
-  console.log( "selected input:", input );
+const inputSelected = ( option: SelectOptionType, optionTitle: string ): void => {
+
+  console.log( "selected input:", option.name, "selected input title", optionTitle );
+
+  switch ( optionTitle ) {
+    case "Amount":
+      selectedAmount = option;
+      break;
+    case "Difficulty":
+      selectedCategory = option;
+      break;
+    case "Category":
+      selectedDifficulty = option;
+      break;
+  }
+
+  if ( selectedDifficulty && selectedAmount && selectedCategory ) {
+    console.log( "All settings selected" );
+    emits( "settingsSelected" );
+  }
+
 };
 
 </script>

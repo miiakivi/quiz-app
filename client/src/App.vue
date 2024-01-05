@@ -29,6 +29,10 @@
           </div>
         </Transition>
 
+
+        <GameSettings @settings-selected="gameSettingsSelected"></GameSettings>
+
+        <!--
         <Transition name="slide" @after-leave="onAfterLeave">
           <div v-if="visible">
             <QuizAnswers
@@ -61,6 +65,7 @@ import { useLazyQuery } from "@vue/apollo-composable";
 import type { QuizQueryResult } from "./types/QuizQuestionQuery";
 import type { QuestionType } from "./types/QuestionType";
 
+import GameSettings from "./components/GameSettings.vue";
 import QuizAnswers from "./components/QuizAnswers.vue";
 import QuizQuestion from "./components/QuizQuestion.vue";
 import ButtonComponent from "./components/ButtonComponent.vue";
@@ -116,6 +121,11 @@ const answeredQuestionsArr = ref<string[]>();
 
 const isGameStarted = (): boolean => {
   return gameStarted.value;
+};
+
+const gameSettingsSelected = (): void => {
+  console.log( "game settings selected" );
+  gameModeSelected.value = true;
 };
 
 const onAfterLeave = (): void => {

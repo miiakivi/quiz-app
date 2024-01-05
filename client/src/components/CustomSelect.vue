@@ -64,10 +64,11 @@ const selected = ref(
 );
 const open = ref( false );
 
-const handleOptionClick = ( option: string ): void => {
-  selected.value = option;
+const handleOptionClick = ( option: SelectOptionType ): void => {
+  selected.value = option.name;
   open.value = false;
-  emit( "input", option );
+  optionSelected.value = true;
+  emit( "input", option, props.title );
 };
 
 </script>
