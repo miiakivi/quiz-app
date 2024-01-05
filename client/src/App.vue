@@ -139,6 +139,8 @@ const queryLoaded = ref( false );
 const quizOptions = reactive( gameSettings ); // Game starts with selecting game settings
 const currentIndex = ref( 0 );
 const visible = ref( true );
+
+const showGameSettings = ref( false );
 const gameModeSelected = ref( false );
 
 // How many qiestions quiz has and has 'correct' or 'wrong' in a place already answered questions.
@@ -163,8 +165,10 @@ const onAfterLeave = (): void => {
 
 function startGame (): void {
   // Load questions and start game
-  load();
+  showGameSettings.value = false;
   gameStarted.value = true;
+  load();
+
 }
 
 const nextQuestion = (): void => {
@@ -172,7 +176,13 @@ const nextQuestion = (): void => {
   currentIndex.value = ( currentIndex.value + 1 ) % quizOptions.length;
 };
 
-function handleGameModeSelection (): void {
+function handleGameModeSelection ( answer: string ): void {
+
+  if ( answer === "Customize your challenge" ) {
+    showGameSettings.value = true;
+    return;
+  }
+
   gameModeSelected.value = true;
 }
 
@@ -180,7 +190,7 @@ function handleGameModeSelection (): void {
 function handleNextQuestion ( answerOption: string, selectedRightAnswer: boolean ): void {
 
   // What is gameMode?
-  if ( !gameModeSelected.value ) handleGameModeSelection();
+  if ( !gameModeSelected.value ) handleGameModeSelection( answerOption );
 
   // Questions from db fetched
   if ( queryLoaded.value ) {
