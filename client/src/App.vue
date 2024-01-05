@@ -69,6 +69,7 @@ import { useLazyQuery } from "@vue/apollo-composable";
 
 import type { QuizQueryResult } from "./types/QuizQuestionQuery";
 import type { QuestionType } from "./types/QuestionType";
+import type { SelectOptionType } from "./types/SelectOptionType";
 
 import GameSettings from "./components/GameSettings.vue";
 import QuizAnswers from "./components/QuizAnswers.vue";
