@@ -16,7 +16,7 @@
         </div>
       </div>
 
-      <div class="select-dropdown" @blur="open = false" v-else>
+      <div class="select-dropdown" @blur="open = false" v-else-if="!loading && props.type === SelectType.options">
         <div class="select-dropdown__selected" :class="{ open: open }" @click="open = !open">
           {{ selected }}
         </div>
@@ -32,6 +32,8 @@
           </div>
         </div>
       </div>
+
+      <div v-else-if="!loading && props.type === SelectType.number">Number type</div>
     </div>
   </div>
 
@@ -49,7 +51,13 @@ type Props = {
   options: SelectOptionType[] | undefined,
   default: string,
   title: string,
+  type: SelectType,
   loading?: boolean,
+}
+
+enum SelectType {
+  number,
+  options
 }
 
 const props = defineProps<Props>();

@@ -3,20 +3,23 @@
     <CustomSelect
       :options="gameDifficulty"
       :default="'select'"
-      title="Difficulty"
+      title="difficulty"
+      :type="SelectType.options"
       @input="inputSelected"
     />
     <CustomSelect
       :options="quizCategories"
       :default="'select'"
-      title="Category"
+      title="category"
+      :type="SelectType.options"
       :loading="loading"
       @input="inputSelected"
     />
     <CustomSelect
       :options="gameDifficulty"
       :default="'select'"
-      title="Amount"
+      title="amount"
+      :type="SelectType.number"
       @input="inputSelected"
     />
   </div>
@@ -42,6 +45,7 @@ const quizCategories = ref();
 
 const gameDifficulty: SelectOptionType[] = quizDifficulty.map( ( name: string, index: number ) => {
   return {
+    title: "difficulty",
     id: index,
     name
   };
@@ -56,6 +60,7 @@ watch( result, () => {
 
   const fetchedCategories = result.value.getAllCategories.map( ( data: SelectOptionType )  => {
     return {
+      title:"category",
       id: data.id,
       name: data.name
     };
@@ -70,17 +75,16 @@ watch( result, () => {
 
 const inputSelected = ( option: SelectOptionType, optionTitle: string ): void => {
 
-  console.log( "selected input:", option.name, "selected input title", optionTitle );
-
   switch ( optionTitle ) {
-    case "Amount":
+    case "amount":
       selectedAmount = option;
       break;
-    case "Difficulty":
-      selectedCategory = option;
-      break;
-    case "Category":
+    case "difficulty":
       selectedDifficulty = option;
+      break;
+    case "category":
+      selectedCategory = option;
+
       break;
   }
 
