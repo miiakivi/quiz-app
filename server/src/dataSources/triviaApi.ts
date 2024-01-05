@@ -20,13 +20,8 @@ export default class TriviaAPI extends RESTDataSource {
 
   async getQuizQuestions ( { args: { amount, category, difficulty, type } }: QuestionRequestArgs ): Promise<QuizQuestion[]> {
 
-    //console.log( "amount", amount );
-    /*if ( amount < 1 || amount > 50 ) {
+    if ( amount < 10 || amount > 50 ) {
       throw new GraphQLError( "Invalid value. Amount must be between 1 and 50" );
-    }*/
-
-    if ( category < 9 || category > 32  ) {
-      throw new GraphQLError( "Invalid value. category id must be between 9 and 32" );
     }
 
     const url = `api.php?amount=${ encodeURIComponent( amount ) }${ category ? `&category=${ encodeURIComponent( category ) }` : "" }${ difficulty ? `&difficulty=${ encodeURIComponent( difficulty ) }` : "" }${ type ? `&type=${ encodeURIComponent( type ) }` : "" }`;
