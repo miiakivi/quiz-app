@@ -1,20 +1,20 @@
 <template>
   <div class="game-settings__container">
     <CustomSelect
-      :options="quizDifficulty"
+      :options="gameDifficulty"
       :default="'select'"
       title="Difficulty"
       @input="inputSelected"
     />
     <CustomSelect
-      :options="quizDifficulty"
+      :options="quizCategories"
       :default="'select'"
       title="Category"
       :loading="loading"
       @input="inputSelected"
     />
     <CustomSelect
-      :options="quizDifficulty"
+      :options="gameDifficulty"
       :default="'select'"
       title="Amount"
       @input="inputSelected"
@@ -23,10 +23,9 @@
 </template>
 
 <script setup lang="ts">
-import { watch } from "vue";
+import { watch, ref } from "vue";
 
 import { useQuery } from "@vue/apollo-composable";
-
 
 import quizDifficulty from "../data/quizz-difficulty";
 import CustomSelect from "./CustomSelect.vue";
@@ -39,6 +38,7 @@ const emits = defineEmits( [ "settingsSelected" ] );
 
 const { loading, error, result } = useQuery( GET_QUIZ_CATEGORIES );
 
+const quizCategories = ref();
 
 const gameDifficulty: SelectOptionType[] = quizDifficulty.map( ( name: string, index: number ) => {
   return {
