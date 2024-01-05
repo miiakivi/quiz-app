@@ -30,11 +30,16 @@
         </Transition>
 
 
-        <GameSettings @settings-selected="gameSettingsSelected"></GameSettings>
-
-        <!--
         <Transition name="slide" @after-leave="onAfterLeave">
-          <div v-if="visible">
+          <div v-if="visible && showGameSettings && !gameStarted">
+            <GameSettings
+              @settings-selected="gameSettingsSelected">
+            </GameSettings>
+          </div>
+        </Transition>
+
+        <Transition name="slide" @after-leave="onAfterLeave">
+          <div v-if="visible && !showGameSettings && !loading">
             <QuizAnswers
               :answerOptions="quizOptions[currentIndex]"
               @selectAnswer="handleNextQuestion"
