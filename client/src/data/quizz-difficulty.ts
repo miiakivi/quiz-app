@@ -1,4 +1,4 @@
 // Trivia quiz difficulty levels
-const quizDifficulty = [ "Easy", "Medium", "Hard" ];
+const quizDifficulty = [ "easy", "medium", "hard" ];
 
 export default quizDifficulty;
