@@ -46,7 +46,7 @@ import { ref, defineProps, defineEmits } from "vue";
 import IconComponent from "./IconComponent.vue";
 
 type Props = {
-  options: string[],
+  options: SelectOptionType[] | undefined,
   default: string,
   title: string,
   loading?: boolean,
@@ -55,13 +55,8 @@ type Props = {
 const props = defineProps<Props>();
 const emit = defineEmits( [ "input" ] );
 
-const selected = ref(
-  props.default
-    ? props.default
-    : props.options.length > 0
-      ? props.options[0]
-      : null
-);
+const selected = ref( props.default ?? props.options?.[0] ?? null );
+
 const open = ref( false );
 
 const handleOptionClick = ( option: SelectOptionType ): void => {
