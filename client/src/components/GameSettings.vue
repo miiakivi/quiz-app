@@ -10,6 +10,7 @@
       :options="quizDifficulty"
       :default="'select'"
       title="Category"
+      :loading="loading"
       @input="inputSelected"
     />
     <CustomSelect

@@ -10,7 +10,13 @@
         </Transition>
       </div>
 
-      <div class="select-dropdown" @blur="open = false">
+      <div class="select-dropdown__loading" v-if="loading">
+        <div class="select-dropdown__loading__selected">
+          loading...
+        </div>
+      </div>
+
+      <div class="select-dropdown" @blur="open = false" v-else>
         <div class="select-dropdown__selected" :class="{ open: open }" @click="open = !open">
           {{ selected }}
         </div>
@@ -43,6 +49,7 @@ type Props = {
   options: string[],
   default: string,
   title: string,
+  loading?: boolean,
 }
 
 const props = defineProps<Props>();
