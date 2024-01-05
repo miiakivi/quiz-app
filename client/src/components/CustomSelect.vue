@@ -3,7 +3,12 @@
     <p class="select-container__title">{{ props.title }}</p>
     <div class="flex-container">
 
-      <IconComponent icon-name="check-mark--light"/>
+      <div class="icon-container">
+        <Transition name="fade" mode="out-in">
+          <IconComponent icon-name="check-mark" v-if="optionSelected"/>
+          <IconComponent icon-name="check-mark--light" v-else />
+        </Transition>
+      </div>
 
       <div class="select-dropdown" @blur="open = false">
         <div class="select-dropdown__selected" :class="{ open: open }" @click="open = !open">
@@ -61,6 +66,26 @@ const handleOptionClick = ( option: string ): void => {
 </script>
 
 <style scoped lang="less">
+
+.icon-container{
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.fade-enter-from {
+  opacity: 0;
+  transform: translateY(100%);
+}
+
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(-100%);
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s, transform 0.25s;
+}
 
 .flex-container {
   display: flex;
