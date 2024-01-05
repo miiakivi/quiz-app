@@ -108,6 +108,28 @@ const handleOptionClick = ( option: SelectOptionType ): void => {
     margin: 0.5rem 0 0.25rem 2rem;
   }
 }
+
+// Make this better please! Too much repetition
+.select-dropdown__loading {
+  position: relative;
+  width: 100%;
+  text-align: center;
+  outline: none;
+
+  .select-dropdown__loading__selected {
+    border-radius: var(--border-radius);
+    border: var(--border-width) solid var(--color-pink-lighter);
+    padding-left: 1em;
+    user-select: none;
+    text-transform: uppercase;
+    color: var(--color-pink-lighter);
+    font-weight: 900;
+    letter-spacing: 1px;
+    padding: 0.75rem 0;
+  }
+
+
+}
 .select-dropdown {
   position: relative;
   width: 100%;
@@ -157,6 +179,9 @@ const handleOptionClick = ( option: SelectOptionType ): void => {
     left: 0;
     right: 0;
     z-index: 1;
+    max-height: 15rem;
+    overflow: auto;
+    text-align: left;
 
     div {
       font-weight: 700;
