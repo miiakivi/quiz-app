@@ -18,9 +18,9 @@ export type QuestionRequestArgs = {
 }
 
 enum Difficulty {
-  EASY = "easy",
-  MEDIUM = "medium",
-  HARD = "hard",
+  easy = "easy",
+  medium = "medium",
+  hard = "hard"
 }
 
 enum QuestionType {

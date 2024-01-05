@@ -38,9 +38,9 @@ export const typeDefs = `#graphql
   }
 
   enum Difficulty {
-    EASY
-    MEDIUM
-    HARD
+    easy
+    medium
+    hard
   }
 
   enum QuestionType {
