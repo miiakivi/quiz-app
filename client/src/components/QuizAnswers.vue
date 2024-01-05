@@ -14,7 +14,7 @@
       </Transition>
       <Transition name="slide-up" mode="out-in">
         <p class="answer--option" v-if="props.loading">...loading</p>
-        <p class="answer--option" v-else>{{ answerOption }}</p>
+        <p class="answer--option" v-else v-html="answerOption"></p>
       </Transition>
     </div>
   </div>

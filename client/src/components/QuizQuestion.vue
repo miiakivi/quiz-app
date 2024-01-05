@@ -1,7 +1,8 @@
 <template>
   <div class="question-container">
     <h2 class="question--subtitle">Question</h2>
-    <p class="question--title">{{ props.loading ? '...loading' : props.question }}</p>
+    <p class="question--title" v-if="loading">...loading</p>
+    <p class="question--title" v-else v-html="props.question"></p>
   </div>
 </template>
 
