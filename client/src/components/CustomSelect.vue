@@ -10,17 +10,18 @@
         </Transition>
       </div>
 
-      <div class="select-dropdown__loading" v-if="loading">
-        <div class="select-dropdown__loading__selected">
+      <div class="dropdown__loading" v-if="loading">
+        <div class="dropdown__loading__title">
           loading...
         </div>
       </div>
 
-      <div class="select-dropdown" @blur="open = false" v-else-if="!loading && props.type === SelectType.options">
-        <div class="select-dropdown__selected" :class="{ open: open }" @click="open = !open">
-          {{ selected }}
+      <div class="dropdown" @blur="open = false" v-else-if="!loading && props.type === SelectType.options">
+        <div :class="optionSelected ?'dropdown__title selected' : 'dropdown__title'" @click="open = !open">
+          <p>{{ selected }}</p>
+          <IconComponent icon-name="single-arrow"/>
         </div>
-        <div class="select-dropdown__options" :class="{ selectHide: !open }">
+        <div class="dropdown__options" :class="{ selectHide: !open }">
           <div
             v-for="(option, i) of options"
             :key="i"
@@ -28,7 +29,7 @@
               handleOptionClick(option);
             "
           >
-            {{ option }}
+            {{ option.name }}
           </div>
         </div>
       </div>
@@ -37,15 +38,15 @@
     </div>
   </div>
 
-
-
-
-
 </template>
 
 <script setup lang="ts">
+
 import { ref, defineProps, defineEmits } from "vue";
+
+
 import IconComponent from "./IconComponent.vue";
+import type { SelectOptionType } from "@/types/SelectOptionType";
 
 type Props = {
   options: SelectOptionType[] | undefined,
@@ -66,12 +67,22 @@ const emit = defineEmits( [ "input" ] );
 const selected = ref( props.default ?? props.options?.[0] ?? null );
 
 const open = ref( false );
+const optionSelected = ref( false );
 
 const handleOptionClick = ( option: SelectOptionType ): void => {
   selected.value = option.name;
   open.value = false;
   optionSelected.value = true;
   emit( "input", option, props.title );
+};
+
+const close = (): void => {
+  if ( open.value ) {
+    console.log( "is open?", open.value );
+    console.log( "closing.." );
+    open.value = false;
+  }
+
 };
 
 </script>
@@ -118,13 +129,13 @@ const handleOptionClick = ( option: SelectOptionType ): void => {
 }
 
 // Make this better please! Too much repetition
-.select-dropdown__loading {
+.dropdown__loading {
   position: relative;
   width: 100%;
   text-align: center;
   outline: none;
 
-  .select-dropdown__loading__selected {
+  .dropdown__loading__title {
     border-radius: var(--border-radius);
     border: var(--border-width) solid var(--color-pink-lighter);
     padding-left: 1em;
@@ -138,7 +149,7 @@ const handleOptionClick = ( option: SelectOptionType ): void => {
 
 
 }
-.select-dropdown {
+.dropdown {
   position: relative;
   width: 100%;
   text-align: center;
@@ -148,18 +159,45 @@ const handleOptionClick = ( option: SelectOptionType ): void => {
   line-height: 47px;
   */
 
-    .select-dropdown__selected {
+    .dropdown__title {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       border-radius: var(--border-radius);
-      border: var(--border-width) solid var(--color-pink);
-      color: #fff;
-      padding-left: 1em;
+      border: var(--border-width) solid var(--color-pink-lighter);
       cursor: pointer;
-      user-select: none;
-      text-transform: uppercase;
-      color: var(--color-pink);
-      font-weight: 900;
-      letter-spacing: 1px;
-      padding: 0.75rem 0;
+      padding: 0.75rem 0.5rem 0.75rem 0;
+      transition: all 0.2s ease-in-out;
+
+      &.selected {
+        border-color: var(--color-pink);
+
+        p {
+          color: var(--color-pink);
+        }
+
+        svg {
+          stroke: var(--color-pink);
+          transform: rotate(180deg);
+        }
+      }
+
+      p {
+        width: 100%;
+        text-transform: uppercase;
+        color: var(--color-pink-lighter);
+        font-weight: 900;
+        letter-spacing: 1px;
+        transition: all 0.2s ease-in-out;
+
+      }
+
+      svg {
+        stroke: var(--color-pink-lighter);
+        transition: all 0.2s ease-in-out;
+
+      }
 
     .open {
       border: 1px solid #ad8225;
@@ -167,18 +205,19 @@ const handleOptionClick = ( option: SelectOptionType ): void => {
     }
   }
 
-    &:after {
-      position: absolute;
-      content: "";
-      top: 22px;
-      right: 1em;
-      width: 0;
-      height: 0;
-      border: 5px solid transparent;
-      border-color: #fff transparent transparent transparent;
-  }
+  .dropdown__title:hover {
+        border-color: var(--color-pink);
 
-  .select-dropdown__options {
+        p {
+          color: var(--color-pink);
+        }
+
+        svg {
+          stroke: var(--color-pink);
+        }
+      }
+
+  .dropdown__options {
     border-radius: var(--border-radius);
     overflow: hidden;
     position: absolute;
