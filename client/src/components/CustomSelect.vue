@@ -34,7 +34,20 @@
         </div>
       </div>
 
-      <div v-else-if="!loading && props.type === SelectType.number">Number type</div>
+      <div class="select-amount" v-else-if="!loading && props.type === SelectType.number">
+
+        <input
+          class="select-amount__container"
+          v-model="optionAmount"
+          type="number"
+          @blur="checkAndChangeValue"
+        />
+
+        <div class="select-amount__icons" >
+          <IconComponent icon-name="single-arrow" @click="addAmount()"/>
+          <IconComponent icon-name="single-arrow" @click="decreaseAmount()"/>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -42,7 +55,7 @@
 
 <script setup lang="ts">
 
-import { ref, defineProps, defineEmits } from "vue";
+import { ref, defineProps, defineEmits, watch } from "vue";
 
 
 import IconComponent from "./IconComponent.vue";
@@ -69,6 +82,38 @@ const selected = ref( props.default ?? props.options?.[0] ?? null );
 const open = ref( false );
 const optionSelected = ref( false );
 
+const optionAmount = ref( 10 );
+const oldOptionAmount = ref( 10 );
+
+const checkAndChangeValue = (): void => {
+  const inputValueAsNumber = Number( optionAmount.value );
+
+  if ( inputValueAsNumber < 10 || inputValueAsNumber > 50 ) {
+    console.log( "NOT valid number" );
+    // Value is valid
+    optionAmount.value = oldOptionAmount.value;
+  }
+  else {
+    console.log( "Valid number" );
+    // Value is not valid, revert to the old value
+    oldOptionAmount.value = optionAmount.value;
+  }
+
+};
+
+const addAmount = (): void => {
+  if ( optionAmount.value < 50 ) {
+    optionAmount.value++;
+  }
+};
+
+const decreaseAmount = (): void => {
+  if ( optionAmount.value > 10 ) {
+    optionAmount.value--;
+  }
+
+};
+
 const handleOptionClick = ( option: SelectOptionType ): void => {
   selected.value = option.name;
   open.value = false;
@@ -76,18 +121,19 @@ const handleOptionClick = ( option: SelectOptionType ): void => {
   emit( "input", option, props.title );
 };
 
-const close = (): void => {
-  if ( open.value ) {
-    console.log( "is open?", open.value );
-    console.log( "closing.." );
-    open.value = false;
-  }
-
-};
-
 </script>
 
 <style scoped lang="less">
+
+input[type="number"] {
+  -webkit-appearance: textfield;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+}
 
 .icon-container{
   width: 1.5rem;
@@ -149,7 +195,13 @@ const close = (): void => {
 
 
 }
-.dropdown {
+
+.select-amount {
+    display: flex;
+    align-items: center;
+  }
+
+.dropdown, .select-amount {
   position: relative;
   width: 100%;
   text-align: center;
@@ -159,63 +211,50 @@ const close = (): void => {
   line-height: 47px;
   */
 
-    .dropdown__title {
+
+  .dropdown__title, .select-amount__container {
       position: relative;
       display: flex;
       justify-content: center;
       align-items: center;
       border-radius: var(--border-radius);
-      border: var(--border-width) solid var(--color-pink-lighter);
+      border: var(--border-width) solid var(--color-pink);
       cursor: pointer;
       padding: 0.75rem 0.5rem 0.75rem 0;
       transition: all 0.2s ease-in-out;
+  }
 
-      &.selected {
-        border-color: var(--color-pink);
 
-        p {
-          color: var(--color-pink);
-        }
+  .select-amount__container {
+      width: fit-content;
+      padding: 0.75rem 1rem;
+    }
 
-        svg {
-          stroke: var(--color-pink);
-          transform: rotate(180deg);
-        }
+    .select-amount__icons {
+      display: grid;
+      > :nth-child(2) {
+        transform: rotate(180deg);
       }
+
+  }
+
+    .dropdown__title {
 
       p {
         width: 100%;
         text-transform: uppercase;
-        color: var(--color-pink-lighter);
+        color: var(--color-pink);
         font-weight: 900;
         letter-spacing: 1px;
         transition: all 0.2s ease-in-out;
-
       }
 
       svg {
-        stroke: var(--color-pink-lighter);
+        stroke: var(--color-pink);
         transition: all 0.2s ease-in-out;
 
       }
-
-    .open {
-      border: 1px solid #ad8225;
-      border-radius: 6px 6px 0px 0px;
-    }
   }
-
-  .dropdown__title:hover {
-        border-color: var(--color-pink);
-
-        p {
-          color: var(--color-pink);
-        }
-
-        svg {
-          stroke: var(--color-pink);
-        }
-      }
 
   .dropdown__options {
     border-radius: var(--border-radius);
