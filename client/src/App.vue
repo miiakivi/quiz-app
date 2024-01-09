@@ -274,7 +274,7 @@ flex-direction: column;
   width: 100%;
   max-width: 60rem;
   min-height: 31.25rem;
-  background-color: #232946;
+  background-color: var(--color-main-container);
   padding: 2rem;
   border-radius: var(--border-radius);
   box-shadow: var(--box-shadow);

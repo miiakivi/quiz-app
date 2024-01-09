@@ -136,6 +136,23 @@ input[type=number]::-webkit-outer-spin-button {
   -webkit-appearance: none;
 }
 
+.flex-container {
+  display: flex;
+}
+
+.flex-item {
+  margin: 5px;
+  padding: 10px;
+  border: 1px solid #ccc;
+}
+
+.smaller {
+  flex: 1; /* Adjust the flex property to control the size of smaller items */
+}
+
+.bigger {
+  flex: 2; /* Adjust the flex property to control the size of the bigger item */
+}
 .icon-container{
   width: 1.5rem;
   height: 1.5rem;
@@ -221,7 +238,7 @@ input[type=number]::-webkit-outer-spin-button {
       border-radius: var(--border-radius);
       border: var(--border-width) solid var(--color-pink);
       cursor: pointer;
-      padding: 0.75rem 0.5rem 0.75rem 0;
+      padding: 0.75rem 0;
       transition: all 0.2s ease-in-out;
   }
 
@@ -233,8 +250,15 @@ input[type=number]::-webkit-outer-spin-button {
 
     .select-amount__icons {
       display: grid;
+      margin-left: 0.5rem;
+      cursor: pointer;
+
       > :nth-child(2) {
         transform: rotate(180deg);
+      }
+
+      svg {
+        stroke: var(--color-text);
       }
 
   }
