@@ -186,7 +186,7 @@ const isGameStarted = (): boolean => {
 const gameSettingsSelected = ( amount: SelectOptionType, category: SelectOptionType, difficulty: SelectOptionType ): void => {
 
   questionArgs.category = category.id;
-  questionArgs.amount = 10;
+  questionArgs.amount = amount.id;
   questionArgs.difficulty = difficulty.name.toLowerCase();
 
   gameModeSelected.value = true;

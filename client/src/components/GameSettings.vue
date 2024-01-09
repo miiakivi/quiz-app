@@ -63,7 +63,7 @@ const gameDifficulty: SelectOptionType[] = quizDifficulty.map( ( name: string, i
 
 let selectedDifficulty: SelectOptionType | null = null;
 let selectedCategory: SelectOptionType | null = null;
-let selectedAmount: SelectOptionType | null = null;
+let selectedAmount: SelectOptionType = { id:10, name: "amount" };
 
 watch( result, () => {
 

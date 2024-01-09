@@ -80,7 +80,7 @@ const emit = defineEmits( [ "input" ] );
 const selected = ref( props.default ?? props.options?.[0] ?? null );
 
 const open = ref( false );
-const optionSelected = ref( false );
+const optionSelected = ref( props.type === SelectType.number );
 
 const optionAmount = ref( 10 );
 const oldOptionAmount = ref( 10 );
@@ -94,8 +94,8 @@ const checkAndChangeValue = (): void => {
     optionAmount.value = oldOptionAmount.value;
   }
   else {
-    console.log( "Valid number" );
-    // Value is not valid, revert to the old value
+    // Value is valid
+    emit( "input", { id:optionAmount.value, name: props.title }, props.title );
     oldOptionAmount.value = optionAmount.value;
   }
 
@@ -104,14 +104,15 @@ const checkAndChangeValue = (): void => {
 const addAmount = (): void => {
   if ( optionAmount.value < 50 ) {
     optionAmount.value++;
+    emit( "input", { id:optionAmount.value, name: props.title }, props.title );
   }
 };
 
 const decreaseAmount = (): void => {
   if ( optionAmount.value > 10 ) {
     optionAmount.value--;
+    emit( "input", { id:optionAmount.value, name: props.title }, props.title );
   }
-
 };
 
 const handleOptionClick = ( option: SelectOptionType ): void => {
