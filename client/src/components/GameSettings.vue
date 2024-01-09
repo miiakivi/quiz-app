@@ -1,27 +1,37 @@
 <template>
   <div class="game-settings__container">
-    <CustomSelect
-      :options="gameDifficulty"
-      :default="'select'"
-      title="difficulty"
-      :type="SelectType.options"
-      @input="inputSelected"
-    />
-    <CustomSelect
-      :options="quizCategories"
-      :default="'select'"
-      title="category"
-      :type="SelectType.options"
-      :loading="loading"
-      @input="inputSelected"
-    />
-    <CustomSelect
-      :options="gameDifficulty"
-      :default="'select'"
-      title="amount"
-      :type="SelectType.number"
-      @input="inputSelected"
-    />
+    <div class="bigger">
+      <CustomSelect
+        :options="quizCategories"
+        :default="'select'"
+        title="category"
+        :type="SelectType.options"
+        :loading="loading"
+        @input="inputSelected"
+      />
+    </div>
+
+    <div class="medium">
+      <CustomSelect
+        :options="gameDifficulty"
+        :default="'select'"
+        title="difficulty"
+        :type="SelectType.options"
+        @input="inputSelected"
+      />
+    </div>
+    <div class="smaller">
+      <CustomSelect
+        :options="gameDifficulty"
+        :default="'select'"
+        title="amount"
+        :type="SelectType.number"
+        @input="inputSelected"
+      />
+    </div>
+
+
+
   </div>
 </template>
 
@@ -108,6 +118,18 @@ const inputSelected = ( option: SelectOptionType, optionTitle: string ): void =>
       gap: 2rem;
       margin-top: 2rem;
   }
+}
+
+.smaller {
+  flex: 1; /* Adjust the flex property to control the size of smaller items */
+}
+
+.medium {
+  flex: 2;
+}
+
+.bigger {
+  flex: 3; /* Adjust the flex property to control the size of the bigger item */
 }
 
 </style>
