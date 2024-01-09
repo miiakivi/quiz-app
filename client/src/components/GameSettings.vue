@@ -102,13 +102,11 @@ const inputSelected = ( option: SelectOptionType, optionTitle: string ): void =>
     console.log( "All settings selected" );
     emits( "settingsSelected" );
   }
-
 };
 
 </script>
 
 <style scoped lang="less">
-
 
 .game-settings__container {
 

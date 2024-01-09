@@ -48,6 +48,8 @@
 
           </div>
         </Transition>
+
+
       </div>
       <div class="buttons-container">
         <ButtonComponent
@@ -105,10 +107,6 @@ watch( error, () => {
   console.error( "--------error happended.", error.value?.message );
   console.log( error );
 } );
-
-
-
-
 
 
 // Watch for changes in the fetched data
@@ -221,6 +219,7 @@ function handleGameModeSelection ( answer: string ): void {
 
 
 function handleNextQuestion ( answerOption: string, selectedRightAnswer: boolean ): void {
+
 
   // What is gameMode?
   if ( !gameModeSelected.value ) handleGameModeSelection( answerOption );

@@ -43,11 +43,13 @@
           @blur="checkAndChangeValue"
         />
 
+
         <div class="select-amount__icons" >
           <IconComponent icon-name="single-arrow" @click="addAmount()"/>
           <IconComponent icon-name="single-arrow" @click="decreaseAmount()"/>
         </div>
       </div>
+
     </div>
   </div>
 
@@ -89,8 +91,8 @@ const checkAndChangeValue = (): void => {
   const inputValueAsNumber = Number( optionAmount.value );
 
   if ( inputValueAsNumber < 10 || inputValueAsNumber > 50 ) {
-    console.log( "NOT valid number" );
-    // Value is valid
+    // Value is not valid, revert to the old value
+
     optionAmount.value = oldOptionAmount.value;
   }
   else {
@@ -210,8 +212,6 @@ input[type=number]::-webkit-outer-spin-button {
     letter-spacing: 1px;
     padding: 0.75rem 0;
   }
-
-
 }
 
 .select-amount {
