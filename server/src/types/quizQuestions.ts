@@ -17,6 +17,12 @@ export type QuestionRequestArgs = {
   }
 }
 
+// Response for fetched quiz question
+export type ResponseQuizQuestion = {
+  response_code: number;
+  results: QuizQuestion[];
+}
+
 enum Difficulty {
   easy = "easy",
   medium = "medium",

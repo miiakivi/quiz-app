@@ -3,7 +3,7 @@ import { RESTDataSource } from "@apollo/datasource-rest";
 import { GraphQLError } from "graphql";
 
 import { CategoryQuestionCount, CategoryResponse } from "../types/categories";
-import { QuestionRequestArgs, QuizQuestion } from "../types/quizQuestions";
+import { QuestionRequestArgs, ResponseQuizQuestion } from "../types/quizQuestions";
 
 export default class TriviaAPI extends RESTDataSource {
   override baseURL = "https://opentdb.com/";
@@ -18,7 +18,8 @@ export default class TriviaAPI extends RESTDataSource {
     return response.category_question_count;
   }
 
-  async getQuizQuestions ( { args: { amount, category, difficulty, type } }: QuestionRequestArgs ): Promise<QuizQuestion[]> {
+  async getQuizQuestions (
+    { args: { amount, category, difficulty, type } }: QuestionRequestArgs ): Promise<ResponseQuizQuestion> {
 
     if ( amount < 10 || amount > 50 ) {
       throw new GraphQLError( "Invalid value. Amount must be between 1 and 50" );
@@ -26,8 +27,9 @@ export default class TriviaAPI extends RESTDataSource {
 
     const url = `api.php?amount=${ encodeURIComponent( amount ) }${ category ? `&category=${ encodeURIComponent( category ) }` : "" }${ difficulty ? `&difficulty=${ encodeURIComponent( difficulty ) }` : "" }${ type ? `&type=${ encodeURIComponent( type ) }` : "" }`;
 
-    const response = await this.get( url );
-    return response.results;
+    const response: ResponseQuizQuestion = await this.get( url );
+    console.log( "response", response );
+    return response;
   }
 
 

@@ -113,9 +113,42 @@ watch( error, () => {
 
 // Watch for changes in the fetched data
 watch( result, () => {
+  const queryResponse = result.value.getRandomQuizQuestions;
+  const responseCode = queryResponse.response_code;
 
+  if ( responseCode === 0 ) {
+    // Success
+    handleSuccessfulQuestionsQuery( queryResponse.results );
+  } else {
+    // Error happened
+    handleQuestionsQueryFailure( responseCode );
+  }
+  //nextQuestion();
+} );
+
+const handleQuestionsQueryFailure = ( code: number ): void => {
+  switch ( code ) {
+    case 1:
+      console.error( "No Results! Could not return results. The API doesn't have enough questions for your query." );
+      return;
+    case 2:
+      console.error( "Invalid Parameter! Contains an invalid parameter. Arguements passed in aren't valid." );
+      return;
+    case 3:
+      console.error( "Token Not Found! Session Token does not exist." );
+      return;
+    case 4:
+      console.error( "Token Empty! Resetting the Sessoin Token is necessary." );
+      return;
+    case 5:
+      console.error( "Rate Limit! Too many requests have occurred." );
+      return;
+  }
+};
+
+const handleSuccessfulQuestionsQuery = ( queryResponse: QuizQueryResult[] ): void => {
   queryLoaded.value = true;
-  const fetchedQuestions: QuestionType[]= result.value.getRandomQuizQuestions.map( ( data: QuizQueryResult ) => {
+  const fetchedQuestions: QuestionType[]= queryResponse.map( ( data: QuizQueryResult ) => {
     return {
       question: data.question,
       options: shuffleArrayOrder( [ ...data.incorrect_answers, data.correct_answer ] ),
@@ -129,8 +162,7 @@ watch( result, () => {
 
   visible.value = false;
   answeredQuestionsArr.value = createStringArray( quizOptions.length );
-  //nextQuestion();
-} );
+};
 
 const pauseTimer = ref( false );
 const gameStarted = ref( false );

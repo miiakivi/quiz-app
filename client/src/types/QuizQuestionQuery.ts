@@ -7,6 +7,12 @@ export type QuizQueryResult = {
   type: string;
 }
 
+export type ResponseQuizQuestion = {
+  response_code: number;
+  results: QuizQueryResult[];
+}
+
+// Response for fetched quiz question
 export type QuizQuestionQuery = {
-  getRandomQuizQuestions: QuizQueryResult[];
+  getRandomQuizQuestions: ResponseQuizQuestion;
 }

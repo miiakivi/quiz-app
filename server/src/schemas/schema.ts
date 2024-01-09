@@ -30,6 +30,11 @@ export const typeDefs = `#graphql
     type: String
   }
 
+  type ResponseQuizQuestion {
+    response_code: Int
+    results: [QuizQuestion]
+  }
+
   input QuestionRequestArgs {
     amount: Int
     category: Int
@@ -51,6 +56,6 @@ export const typeDefs = `#graphql
   type Query {
     getAllCategories: [Category!]!
     getQuestionCountFromCategory(id: Int!): CategoryQuestionCount
-    getRandomQuizQuestions(args: QuestionRequestArgs): [QuizQuestion]
+    getRandomQuizQuestions(args: QuestionRequestArgs): ResponseQuizQuestion
   }
 `;
