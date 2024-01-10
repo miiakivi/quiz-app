@@ -59,7 +59,7 @@
       <div class="buttons-container">
         <ButtonComponent
           v-if="gameModeSelected"
-          @handle-button-click="startGame"
+          @handle-button-click="loadQuestionsFromDB"
           label="Let's go"
           :disabled="!gameModeSelected"/>
       </div>
@@ -77,7 +77,7 @@ import type { QuizQueryResult } from "./types/QuizQuestionQuery";
 import type { QuestionType } from "./types/QuestionType";
 import type { SelectOptionType } from "./types/SelectOptionType";
 
-import GameSettings from "./components/GameSettings.vue";
+import GameSettings from "./components/gameSettings/GameSettings.vue";
 import QuizAnswers from "./components/QuizAnswers.vue";
 import QuizQuestion from "./components/QuizQuestion.vue";
 import ButtonComponent from "./components/ButtonComponent.vue";
@@ -198,6 +198,7 @@ const isGameStarted = (): boolean => {
 const gameSettingsSelected = ( amount: SelectOptionType, category: SelectOptionType, difficulty: SelectOptionType ): void => {
 
   questionArgs.category = category.id;
+  categoryName = category.name;
   questionArgs.amount = amount.id;
   questionArgs.difficulty = difficulty.name.toLowerCase();
 
@@ -217,6 +218,7 @@ function handleGameModeSelection ( answer: string ): void {
 
   if ( answer === "Customize your challenge" ) {
     showGameSettings.value = true;
+    quizOptions.splice( 0, quizOptions.length, { question: "Make your choices" } );
     return;
   }
 
@@ -228,7 +230,8 @@ function handleNextQuestion ( answerOption: string, selectedRightAnswer: boolean
 
 
   // What is gameMode?
-  if ( !gameModeSelected.value ) handleGameModeSelection( answerOption );
+  if ( !gameModeSelected.value ){
+  } handleGameModeSelection( answerOption );
 
   // Questions from db fetched
   if ( queryLoaded.value ) {
