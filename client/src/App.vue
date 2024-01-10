@@ -133,6 +133,11 @@ watch( result, () => {
   }
 } );
 
+const loadQuestionsFromDB = (): void => {
+  //Load questions and start game
+  load() || refetch();
+};
+
 const handleQuestionsQueryFailure = ( code: number ): void => {
   switch ( code ) {
     case 1:
@@ -202,14 +207,6 @@ const gameSettingsSelected = ( amount: SelectOptionType, category: SelectOptionT
 const onAfterLeave = (): void => {
   visible.value = true;
 };
-
-function startGame (): void {
-  // Load questions and start game
-  showGameSettings.value = false;
-  gameStarted.value = true;
-  load();
-
-}
 
 const nextQuestion = (): void => {
   pauseTimer.value = false;
