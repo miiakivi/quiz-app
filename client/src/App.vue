@@ -7,6 +7,8 @@
       <button type="button" @click="() => closeErrorMsg()">OK</button>
     </div>
 
+    <InfoContainer type="winner" @handle-button-click="resetGame"/>
+
     <Transition name="slide-fade" @after-leave="onAfterLeave">
       <div v-if="visible">
         <QuizPoints :answered-questions="answeredQuestionsArr" :question-index="currentIndex" />
@@ -81,6 +83,7 @@ import GameSettings from "./components/gameSettings/GameSettings.vue";
 import QuizAnswers from "./components/QuizAnswers.vue";
 import QuizQuestion from "./components/QuizQuestion.vue";
 import ButtonComponent from "./components/ButtonComponent.vue";
+import InfoContainer from "./components/InfoContainer.vue";
 
 import { gameSettings } from  "./data/options";
 
