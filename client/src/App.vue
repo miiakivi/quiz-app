@@ -1,5 +1,12 @@
 <template>
   <div class="wrapper">
+
+    <div class="error-container" v-if="errorHappened">
+      <p class="error__title">Error</p>
+      <p class="error__msg">{{ errorMsg }}</p>
+      <button type="button" @click="() => closeErrorMsg()">OK</button>
+    </div>
+
     <Transition name="slide-fade" @after-leave="onAfterLeave">
       <div v-if="visible">
         <QuizPoints :answered-questions="answeredQuestionsArr" :question-index="currentIndex" />
@@ -97,15 +104,19 @@ const questionArgs: QuizQuestionArgs = {
   amount: 10,
 } ;
 
-const { loading, error, result, load } = useLazyQuery( GET_QUESTIONS, {
+const errorMsg = ref( "" );
+const errorHappened = ref( false );
+let categoryName = "";
+
+
+const { loading, error, result, load, refetch } = useLazyQuery( GET_QUESTIONS, {
   args: questionArgs,
 } );
 
-
-
 watch( error, () => {
-  console.error( "--------error happended.", error.value?.message );
-  console.log( error );
+  errorHappened.value = true;
+  errorMsg.value = error.value ? error.value.message : "GraphQL Error!";
+  console.error( "GraphQL error!", error.value?.message );
 } );
 
 
@@ -116,30 +127,32 @@ watch( result, () => {
 
   if ( responseCode === 0 ) {
     // Success
+    showGameSettings.value = false;
+    gameStarted.value = true;
     handleSuccessfulQuestionsQuery( queryResponse.results );
   } else {
     // Error happened
+    errorHappened.value = true;
     handleQuestionsQueryFailure( responseCode );
   }
-  //nextQuestion();
 } );
 
 const handleQuestionsQueryFailure = ( code: number ): void => {
   switch ( code ) {
     case 1:
-      console.error( "No Results! Could not return results. The API doesn't have enough questions for your query." );
+      errorMsg.value = `No Results! Category ${ categoryName } doesn't have enough questions for your query.`;
       return;
     case 2:
-      console.error( "Invalid Parameter! Contains an invalid parameter. Arguements passed in aren't valid." );
+      errorMsg.value = "Invalid Amount! Must be number and between 10-50";
       return;
     case 3:
-      console.error( "Token Not Found! Session Token does not exist." );
+      errorMsg.value = "Token Not Found! Session Token does not exist.";
       return;
     case 4:
-      console.error( "Token Empty! Resetting the Sessoin Token is necessary." );
+      errorMsg.value = "Token Empty! Resetting the Sessoin Token is necessary.";
       return;
     case 5:
-      console.error( "Rate Limit! Too many requests have occurred." );
+      errorMsg.value = "Rate Limit! Too many requests have occurred.";
       return;
   }
 };
@@ -255,12 +268,39 @@ function createStringArray ( num: number ): string[] {
   return Array( num ).fill( "" );
 }
 
+function closeErrorMsg (): void  {
+  console.log( "closing error message" );
+  errorHappened.value = false;
+};
+
 </script>
 
 <style scoped lang="less">
 
+.error-container {
+  position: absolute;
+  top: 0;
+  right: 0;
+  text-align: center;
+  background-color: rgb(18, 27, 38);
+  padding: 1rem 1.75rem;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  width: 100%;
+  max-width: 20rem;
+
+  .error__title {
+    color: var(--color-incorrect);
+    font-weight: 700;
+    letter-spacing: 1px;
+    font-size: 1.2rem;
+    //text-transform: uppercase;
+  }
+}
+
 
 .wrapper {
+  position: relative;
   display: flex;
   justify-content: center; /* Horizontally center the container */
   align-items: center; /* Vertically center the container */
