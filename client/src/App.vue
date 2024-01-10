@@ -100,6 +100,23 @@ type QuizQuestionArgs = {
   category?: number,
   difficulty?: string,
 }
+
+
+const pauseTimer = ref( false );
+const gameStarted = ref( false );
+
+const queryLoaded = ref( false );
+
+const quizOptions = reactive( gameSettings ); // Game starts with selecting game settings
+const currentIndex = ref( 0 );
+const visible = ref( true );
+
+const showGameSettings = ref( false );
+const gameModeSelected = ref( false );
+
+// How many qiestions quiz has and has 'correct' or 'wrong' in a place already answered questions.
+const answeredQuestionsArr = ref<string[]>();
+
 const questionArgs: QuizQuestionArgs = {
   amount: 10,
 } ;
@@ -179,21 +196,6 @@ const handleSuccessfulQuestionsQuery = ( queryResponse: QuizQueryResult[] ): voi
   answeredQuestionsArr.value = createStringArray( quizOptions.length );
 };
 
-const pauseTimer = ref( false );
-const gameStarted = ref( false );
-
-const queryLoaded = ref( false );
-
-const quizOptions = reactive( gameSettings ); // Game starts with selecting game settings
-const currentIndex = ref( 0 );
-const visible = ref( true );
-
-const showGameSettings = ref( false );
-const gameModeSelected = ref( false );
-
-// How many qiestions quiz has and has 'correct' or 'wrong' in a place already answered questions.
-const answeredQuestionsArr = ref<string[]>();
-
 const isGameStarted = (): boolean => {
   return gameStarted.value;
 };
@@ -230,7 +232,6 @@ function handleGameModeSelection ( answer: string ): void {
 
 
 function handleNextQuestion ( answerOption: string, selectedRightAnswer: boolean ): void {
-
 
   // What is gameMode?
   if ( !gameModeSelected.value ){
