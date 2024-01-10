@@ -36,7 +36,6 @@
           </div>
         </Transition>
 
-
         <Transition name="slide" @after-leave="onAfterLeave">
           <div v-if="visible && showGameSettings && !gameStarted">
             <GameSettings
@@ -56,7 +55,6 @@
           </div>
         </Transition>
 
-
       </div>
       <div class="buttons-container">
         <ButtonComponent
@@ -66,7 +64,6 @@
           :disabled="!gameModeSelected"/>
       </div>
     </div>
-
   </div>
 </template>
 
@@ -118,7 +115,6 @@ watch( error, () => {
   errorMsg.value = error.value ? error.value.message : "GraphQL Error!";
   console.error( "GraphQL error!", error.value?.message );
 } );
-
 
 // Watch for changes in the fetched data
 watch( result, () => {
