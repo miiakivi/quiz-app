@@ -3,10 +3,10 @@
 
   <div class="wrapper">
 
-    <ErrorContainer :message="errorMsg" v-if="errorHappened" @input="handleErrorButtonClick"/>
+    <ErrorContainer  v-if="errorHappened" :message="errorMsg" @input="handleErrorButtonClick"/>
 
-    <InfoContainer type="winner" @handle-button-click="resetGame"/>
-    <GameLoop @handle-error="handleError"/>
+    <InfoContainer v-if="gameOver" :type="gameOverType" @handle-button-click="resetGame"/>
+    <GameLoop @game-over="handleGameOver" @handle-error="handleError"/>
   </div>
 
 
@@ -18,8 +18,17 @@ import GameLoop from "./components/GameLoop.vue";
 import ErrorContainer from "./components/ErrorContainer.vue";
 import InfoContainer from "./components/InfoContainer.vue";
 
+const gameOver = ref( false );
+const gameOverType = ref( "" );
+
 const errorMsg = ref( "" );
 const errorHappened = ref( false );
+
+const handleGameOver = ( type: string ): void => {
+  console.log( "game over on App" );
+  gameOver.value = true;
+  gameOverType.value = type;
+};
 
 const handleError = ( message: string ): void => {
   console.log( "error happened" );
