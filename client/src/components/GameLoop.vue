@@ -1,70 +1,62 @@
+
+
+
 <template>
-  <div class="wrapper">
 
-    <div class="error-container" v-if="errorHappened">
-      <p class="error__title">Error</p>
-      <p class="error__msg">{{ errorMsg }}</p>
-      <button type="button" @click="() => closeErrorMsg()">OK</button>
+  <!--ANIMATIONS DO NOT WORK IF THERE IS IF STATEMENET ON THE COMPONENT-->
+  <Transition name="slide-fade" @after-leave="onAfterLeave">
+    <div v-if="visible">
+      <QuizPoints :answered-questions="answeredQuestionsArr" :question-index="currentIndex" />
     </div>
+  </Transition>
 
-    <InfoContainer type="winner" @handle-button-click="resetGame"/>
+  <div class="main-container" >
+    <div >
+      <QuizCategoryInfo
+        :question-number="`${currentIndex + 1}/${quizOptions.length}`"
+        :is-visible="visible"
+        :current-category="quizOptions[currentIndex].category"
+        :on-after-leave="onAfterLeave" />
 
-    <Transition name="slide-fade" @after-leave="onAfterLeave">
-      <div v-if="visible">
-        <QuizPoints :answered-questions="answeredQuestionsArr" :question-index="currentIndex" />
 
-      </div>
-    </Transition>
+      <QuizQuestion
+        :question="quizOptions[currentIndex].question"
+        :loading="loading"
+        :is-visible="visible"
+        :on-after-leave="onAfterLeave" />
 
-    <div class="main-container" >
-      <div >
-        <QuizCategoryInfo
-          :question-number="`${currentIndex + 1}/${quizOptions.length}`"
-          :is-visible="visible"
-          :current-category="quizOptions[currentIndex].category"
-          :on-after-leave="onAfterLeave" />
+      <ProgressTimer
+        v-if="visible && gameStarted"
+        :pause-timer="pauseTimer"
+        :loading="loading"
+        :timer-duration="15"
+        :is-visible="visible && gameStarted"
+        :on-after-leave="onAfterLeave"/>
 
-        <Transition name="slide-fade" @after-leave="onAfterLeave">
-          <div v-if="visible">
-            <QuizQuestion
-              :question="quizOptions[currentIndex].question"
-              :loading="loading" />
-          </div>
-        </Transition>
+      <GameSettings
+        v-if="visible && showGameSettings && !gameStarted"
+        @settings-selected="gameSettingsSelected"
+        :is-visible="visible && showGameSettings && !gameStarted"
+        :on-after-leave="onAfterLeave">
+      </GameSettings>
 
-        <Transition name="slide-fade" @after-leave="onAfterLeave">
-          <div v-if="visible && gameStarted">
-            <ProgressTimer :pause-timer="pauseTimer" :loading="loading" :timer-duration="10"/>
-          </div>
-        </Transition>
+      <QuizAnswers
+        v-if="visible && !showGameSettings && !loading"
+        :is-visible="visible"
+        :on-after-leave="onAfterLeave"
+        :answerOptions="quizOptions[currentIndex]"
+        @selectAnswer="handleNextQuestion"
+        :loading="loading"
+        :game-started="isGameStarted()"/>
 
-        <Transition name="slide" @after-leave="onAfterLeave">
-          <div v-if="visible && showGameSettings && !gameStarted">
-            <GameSettings
-              @settings-selected="gameSettingsSelected">
-            </GameSettings>
-          </div>
-        </Transition>
 
-        <Transition name="slide" @after-leave="onAfterLeave">
-          <div v-if="visible && !showGameSettings && !loading">
-            <QuizAnswers
-              :answerOptions="quizOptions[currentIndex]"
-              @selectAnswer="handleNextQuestion"
-              :loading="loading"
-              :game-started="isGameStarted()"/>
-
-          </div>
-        </Transition>
-
-      </div>
-      <div class="buttons-container">
-        <ButtonComponent
-          v-if="gameModeSelected"
-          @handle-button-click="loadQuestionsFromDB"
-          label="Let's go"
-          :disabled="!gameModeSelected"/>
-      </div>
+    </div>
+    <div class="buttons-container">
+      <ButtonComponent
+        v-if="gameModeSelected"
+        @handle-button-click="loadQuestionsFromDB"
+        label="Let's go"
+        :disabled="!gameModeSelected"/>
     </div>
   </div>
 </template>
@@ -75,25 +67,24 @@ import { reactive, ref, watch } from "vue";
 
 import { useLazyQuery } from "@vue/apollo-composable";
 
-import type { QuizQueryResult } from "./types/QuizQuestionQuery";
-import type { QuestionType } from "./types/QuestionType";
-import type { SelectOptionType } from "./types/SelectOptionType";
+import type { QuizQueryResult } from "../types/QuizQuestionQuery";
+import type { QuestionType } from "../types/QuestionType";
+import type { SelectOptionType } from "../types/SelectOptionType";
 
-import GameSettings from "./components/gameSettings/GameSettings.vue";
-import QuizAnswers from "./components/QuizAnswers.vue";
-import QuizQuestion from "./components/QuizQuestion.vue";
-import ButtonComponent from "./components/ButtonComponent.vue";
-import InfoContainer from "./components/InfoContainer.vue";
+import GameSettings from "./gameSettings/GameSettings.vue";
+import QuizAnswers from "./QuizAnswers.vue";
+import QuizQuestion from "./QuizQuestion.vue";
+import ButtonComponent from "./ButtonComponent.vue";
 
-import { gameSettings } from  "./data/options";
+import { gameSettings } from  "../data/options";
 
-import { shuffleArrayOrder } from "./helpers";
+import { shuffleArrayOrder } from "../helpers";
 
-import { GET_QUESTIONS } from "./graphql/query";
-import QuizCategoryInfo from "./components/QuizCategoryInfo.vue";
-import QuizPoints from "./components/QuizPoints.vue";
-import ProgressTimer from "./components/ProgressTimer.vue";
-import ConfettiExplosion from "./components/ConfettiExplosion.vue";
+import { GET_QUESTIONS } from "../graphql/query";
+import QuizCategoryInfo from "./QuizCategoryInfo.vue";
+import QuizPoints from "./QuizPoints.vue";
+import ProgressTimer from "./ProgressTimer.vue";
+import ConfettiExplosion from "./ConfettiExplosion.vue";
 
 type QuizQuestionArgs = {
   amount: number,
@@ -101,6 +92,7 @@ type QuizQuestionArgs = {
   difficulty?: string,
 }
 
+const emits = defineEmits( [ "handleError" ] );
 
 const pauseTimer = ref( false );
 const gameStarted = ref( false );
@@ -121,8 +113,7 @@ const questionArgs: QuizQuestionArgs = {
   amount: 10,
 } ;
 
-const errorMsg = ref( "" );
-const errorHappened = ref( false );
+
 let categoryName = "";
 
 
@@ -131,8 +122,9 @@ const { loading, error, result, load, refetch } = useLazyQuery( GET_QUESTIONS, {
 } );
 
 watch( error, () => {
-  errorHappened.value = true;
-  errorMsg.value = error.value ? error.value.message : "GraphQL Error!";
+  //errorHappened.value = true;
+  //errorMsg.value = error.value ? error.value.message : "GraphQL Error!";
+  emits( "handleError", error.value ? error.value.message : "GraphQL Error!" );
   console.error( "GraphQL error!", error.value?.message );
 } );
 
@@ -148,7 +140,7 @@ watch( result, () => {
     handleSuccessfulQuestionsQuery( queryResponse.results );
   } else {
     // Error happened
-    errorHappened.value = true;
+    //errorHappened.value = true;
     handleQuestionsQueryFailure( responseCode );
   }
 } );
@@ -159,23 +151,25 @@ const loadQuestionsFromDB = (): void => {
 };
 
 const handleQuestionsQueryFailure = ( code: number ): void => {
+  let errorMsg = "";
   switch ( code ) {
     case 1:
-      errorMsg.value = `No Results! Category ${ categoryName } doesn't have enough questions for your query.`;
-      return;
+      errorMsg = `No Results! Category ${ categoryName } doesn't have enough questions for your query.`;
+      break;
     case 2:
-      errorMsg.value = "Invalid Amount! Must be number and between 10-50";
-      return;
+      errorMsg = "Invalid Amount! Must be number and between 10-50";
+      break;
     case 3:
-      errorMsg.value = "Token Not Found! Session Token does not exist.";
-      return;
+      errorMsg = "Token Not Found! Session Token does not exist.";
+      break;
     case 4:
-      errorMsg.value = "Token Empty! Resetting the Sessoin Token is necessary.";
-      return;
+      errorMsg = "Token Empty! Resetting the Sessoin Token is necessary.";
+      break;
     case 5:
-      errorMsg.value = "Rate Limit! Too many requests have occurred.";
-      return;
+      errorMsg = "Rate Limit! Too many requests have occurred.";
+      break;
   }
+  emits( "handleError", errorMsg );
 };
 
 const handleSuccessfulQuestionsQuery = ( queryResponse: QuizQueryResult[] ): void => {
@@ -211,6 +205,7 @@ const gameSettingsSelected = ( amount: SelectOptionType, category: SelectOptionT
 };
 
 const onAfterLeave = (): void => {
+  console.log( "after leace" );
   visible.value = true;
 };
 
@@ -267,108 +262,78 @@ function createStringArray ( num: number ): string[] {
 
   return Array( num ).fill( "" );
 }
-
+/*
 function closeErrorMsg (): void  {
   console.log( "closing error message" );
   errorHappened.value = false;
-};
+};*/
 
 </script>
 
-<style scoped lang="less">
-
-.error-container {
-  position: absolute;
-  top: 0;
-  right: 0;
-  text-align: center;
-  background-color: rgb(18, 27, 38);
-  padding: 1rem 1.75rem;
-  border-radius: var(--border-radius);
-  box-shadow: var(--box-shadow);
-  width: 100%;
-  max-width: 20rem;
-
-  .error__title {
-    color: var(--color-incorrect);
-    font-weight: 700;
-    letter-spacing: 1px;
-    font-size: 1.2rem;
-    //text-transform: uppercase;
-  }
-}
+  <style scoped lang="less">
 
 
-.wrapper {
-  position: relative;
-  display: flex;
-  justify-content: center; /* Horizontally center the container */
-  align-items: center; /* Vertically center the container */
-flex-direction: column;
-  height: 100%;
-  overflow: hidden;
-}
 
-.main-container {
-  width: 100%;
-  max-width: 60rem;
-  min-height: 31.25rem;
-  background-color: var(--color-main-container);
-  padding: 2rem;
-  border-radius: var(--border-radius);
-  box-shadow: var(--box-shadow);
+  .main-container {
+    width: 100%;
+    max-width: 60rem;
+    min-height: 31.25rem;
+    background-color: var(--color-main-container);
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
 
 
-  .buttons-container {
-    display: flex;
-    justify-content: end;
-    align-items: center;
-    gap: 2rem;
+    .buttons-container {
+      display: flex;
+      justify-content: end;
+      align-items: center;
+      gap: 2rem;
+    }
+
   }
 
-}
+  /* --- TRANSITION --- */
+  .fade-enter-active,
+  .fade-leave-active {
+    transition: opacity 0.3s ease-in-out;
+  }
 
-/* --- TRANSITION --- */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease-in-out;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
+  .fade-enter-from,
+  .fade-leave-to {
+    opacity: 0;
+  }
 
 
-.slide-fade-enter-from {
-  opacity: 0;
-  transform: translateY(100%);
-}
+  .slide-fade-enter-from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
 
-.slide-fade-leave-to {
-  opacity: 0;
-  transform: translateY(-100%);
-}
+  .slide-fade-leave-to {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
 
-.slide-fade-enter-active,
-.slide-fade-leave-active {
-  transition: opacity 0.3s, transform 0.3s;
-}
+  .slide-fade-enter-active,
+  .slide-fade-leave-active {
+    transition: opacity 0.3s, transform 0.3s;
+  }
 
 
-.slide-enter-active,
-.slide-leave-active {
-  transition: opacity 0.3s, transform 0.3s;
-}
+  .slide-enter-active,
+  .slide-leave-active {
+    transition: opacity 0.3s, transform 0.3s;
+  }
 
-.slide-enter-from {
-  opacity: 0;
-  transform: translateX(100%);
-}
+  .slide-enter-from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
 
-.slide-leave-to {
-  opacity: 0;
-  transform: translateX(-100%);
-}
+  .slide-leave-to {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
 
-</style>
+  </style>
