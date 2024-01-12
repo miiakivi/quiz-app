@@ -275,11 +275,3 @@ function checkAnswerOption ( answerOption: string ): boolean[] {
   }
 
 </style>
-
-
-
-
-
-
-
-

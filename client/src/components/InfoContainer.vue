@@ -8,7 +8,6 @@
 </template>
 
 <script setup lang="ts">
-import { ref, toRefs, watch, onBeforeUnmount } from "vue";
 
 type Props = {
   type: string

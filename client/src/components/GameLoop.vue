@@ -4,6 +4,7 @@
 <template>
 
   <!--ANIMATIONS DO NOT WORK IF THERE IS IF STATEMENET ON THE COMPONENT-->
+
   <Transition name="slide-fade" @after-leave="onAfterLeave">
     <div v-if="visible">
       <QuizPoints :answered-questions="answeredQuestionsArr" :question-index="currentIndex" />
@@ -29,7 +30,7 @@
         v-if="visible && gameStarted"
         :pause-timer="pauseTimer"
         :loading="loading"
-        :timer-duration="15"
+        :timer-duration="5"
         :is-visible="visible && gameStarted"
         :on-after-leave="onAfterLeave"
         @game-over="handleGameOVer"/>
@@ -114,9 +115,7 @@ const questionArgs: QuizQuestionArgs = {
   amount: 10,
 } ;
 
-
 let categoryName = "";
-
 
 const { loading, error, result, load, refetch } = useLazyQuery( GET_QUESTIONS, {
   args: questionArgs,
@@ -268,11 +267,6 @@ function createStringArray ( num: number ): string[] {
 
   return Array( num ).fill( "" );
 }
-/*
-function closeErrorMsg (): void  {
-  console.log( "closing error message" );
-  errorHappened.value = false;
-};*/
 
 </script>
 
