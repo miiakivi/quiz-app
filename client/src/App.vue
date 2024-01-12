@@ -1,374 +1,60 @@
+
 <template>
+
   <div class="wrapper">
 
-    <div class="error-container" v-if="errorHappened">
-      <p class="error__title">Error</p>
-      <p class="error__msg">{{ errorMsg }}</p>
-      <button type="button" @click="() => closeErrorMsg()">OK</button>
-    </div>
+    <ErrorContainer :message="errorMsg" v-if="errorHappened" @input="handleErrorButtonClick"/>
 
     <InfoContainer type="winner" @handle-button-click="resetGame"/>
-
-    <Transition name="slide-fade" @after-leave="onAfterLeave">
-      <div v-if="visible">
-        <QuizPoints :answered-questions="answeredQuestionsArr" :question-index="currentIndex" />
-
-      </div>
-    </Transition>
-
-    <div class="main-container" >
-      <div >
-        <QuizCategoryInfo
-          :question-number="`${currentIndex + 1}/${quizOptions.length}`"
-          :is-visible="visible"
-          :current-category="quizOptions[currentIndex].category"
-          :on-after-leave="onAfterLeave" />
-
-        <Transition name="slide-fade" @after-leave="onAfterLeave">
-          <div v-if="visible">
-            <QuizQuestion
-              :question="quizOptions[currentIndex].question"
-              :loading="loading" />
-          </div>
-        </Transition>
-
-        <Transition name="slide-fade" @after-leave="onAfterLeave">
-          <div v-if="visible && gameStarted">
-            <ProgressTimer :pause-timer="pauseTimer" :loading="loading" :timer-duration="10"/>
-          </div>
-        </Transition>
-
-        <Transition name="slide" @after-leave="onAfterLeave">
-          <div v-if="visible && showGameSettings && !gameStarted">
-            <GameSettings
-              @settings-selected="gameSettingsSelected">
-            </GameSettings>
-          </div>
-        </Transition>
-
-        <Transition name="slide" @after-leave="onAfterLeave">
-          <div v-if="visible && !showGameSettings && !loading">
-            <QuizAnswers
-              :answerOptions="quizOptions[currentIndex]"
-              @selectAnswer="handleNextQuestion"
-              :loading="loading"
-              :game-started="isGameStarted()"/>
-
-          </div>
-        </Transition>
-
-      </div>
-      <div class="buttons-container">
-        <ButtonComponent
-          v-if="gameModeSelected"
-          @handle-button-click="loadQuestionsFromDB"
-          label="Let's go"
-          :disabled="!gameModeSelected"/>
-      </div>
-    </div>
+    <GameLoop @handle-error="handleError"/>
   </div>
+
+
 </template>
 
 <script setup lang="ts">
-
-import { reactive, ref, watch } from "vue";
-
-import { useLazyQuery } from "@vue/apollo-composable";
-
-import type { QuizQueryResult } from "./types/QuizQuestionQuery";
-import type { QuestionType } from "./types/QuestionType";
-import type { SelectOptionType } from "./types/SelectOptionType";
-
-import GameSettings from "./components/gameSettings/GameSettings.vue";
-import QuizAnswers from "./components/QuizAnswers.vue";
-import QuizQuestion from "./components/QuizQuestion.vue";
-import ButtonComponent from "./components/ButtonComponent.vue";
+import { ref } from "vue";
+import GameLoop from "./components/GameLoop.vue";
+import ErrorContainer from "./components/ErrorContainer.vue";
 import InfoContainer from "./components/InfoContainer.vue";
-
-import { gameSettings } from  "./data/options";
-
-import { shuffleArrayOrder } from "./helpers";
-
-import { GET_QUESTIONS } from "./graphql/query";
-import QuizCategoryInfo from "./components/QuizCategoryInfo.vue";
-import QuizPoints from "./components/QuizPoints.vue";
-import ProgressTimer from "./components/ProgressTimer.vue";
-import ConfettiExplosion from "./components/ConfettiExplosion.vue";
-
-type QuizQuestionArgs = {
-  amount: number,
-  category?: number,
-  difficulty?: string,
-}
-
-
-const pauseTimer = ref( false );
-const gameStarted = ref( false );
-
-const queryLoaded = ref( false );
-
-const quizOptions = reactive( gameSettings ); // Game starts with selecting game settings
-const currentIndex = ref( 0 );
-const visible = ref( true );
-
-const showGameSettings = ref( false );
-const gameModeSelected = ref( false );
-
-// How many qiestions quiz has and has 'correct' or 'wrong' in a place already answered questions.
-const answeredQuestionsArr = ref<string[]>();
-
-const questionArgs: QuizQuestionArgs = {
-  amount: 10,
-} ;
 
 const errorMsg = ref( "" );
 const errorHappened = ref( false );
-let categoryName = "";
 
-
-const { loading, error, result, load, refetch } = useLazyQuery( GET_QUESTIONS, {
-  args: questionArgs,
-} );
-
-watch( error, () => {
+const handleError = ( message: string ): void => {
+  console.log( "error happened" );
   errorHappened.value = true;
-  errorMsg.value = error.value ? error.value.message : "GraphQL Error!";
-  console.error( "GraphQL error!", error.value?.message );
-} );
+  errorMsg.value = message;
 
-// Watch for changes in the fetched data
-watch( result, () => {
-  const queryResponse = result.value.getRandomQuizQuestions;
-  const responseCode = queryResponse.response_code;
-
-  if ( responseCode === 0 ) {
-    // Success
-    showGameSettings.value = false;
-    gameStarted.value = true;
-    handleSuccessfulQuestionsQuery( queryResponse.results );
-  } else {
-    // Error happened
-    errorHappened.value = true;
-    handleQuestionsQueryFailure( responseCode );
-  }
-} );
-
-const loadQuestionsFromDB = (): void => {
-  //Load questions and start game
-  load() || refetch();
 };
 
-const handleQuestionsQueryFailure = ( code: number ): void => {
-  switch ( code ) {
-    case 1:
-      errorMsg.value = `No Results! Category ${ categoryName } doesn't have enough questions for your query.`;
-      return;
-    case 2:
-      errorMsg.value = "Invalid Amount! Must be number and between 10-50";
-      return;
-    case 3:
-      errorMsg.value = "Token Not Found! Session Token does not exist.";
-      return;
-    case 4:
-      errorMsg.value = "Token Empty! Resetting the Sessoin Token is necessary.";
-      return;
-    case 5:
-      errorMsg.value = "Rate Limit! Too many requests have occurred.";
-      return;
-  }
-};
-
-const handleSuccessfulQuestionsQuery = ( queryResponse: QuizQueryResult[] ): void => {
-  queryLoaded.value = true;
-  const fetchedQuestions: QuestionType[]= queryResponse.map( ( data: QuizQueryResult ) => {
-    return {
-      question: data.question,
-      options: shuffleArrayOrder( [ ...data.incorrect_answers, data.correct_answer ] ),
-      correctAnswer: data.correct_answer,
-      category: data.category,
-      difficulty: data.difficulty
-    };
-  } );
-
-  quizOptions.splice( 0, quizOptions.length, ...fetchedQuestions );
-
-  visible.value = false;
-  answeredQuestionsArr.value = createStringArray( quizOptions.length );
-};
-
-const isGameStarted = (): boolean => {
-  return gameStarted.value;
-};
-
-const gameSettingsSelected = ( amount: SelectOptionType, category: SelectOptionType, difficulty: SelectOptionType ): void => {
-
-  questionArgs.category = category.id;
-  categoryName = category.name;
-  questionArgs.amount = amount.id;
-  questionArgs.difficulty = difficulty.name.toLowerCase();
-
-  gameModeSelected.value = true;
-};
-
-const onAfterLeave = (): void => {
-  visible.value = true;
-};
-
-const nextQuestion = (): void => {
-  pauseTimer.value = false;
-  currentIndex.value = ( currentIndex.value + 1 ) % quizOptions.length;
-};
-
-function handleGameModeSelection ( answer: string ): void {
-
-  if ( answer === "Customize your challenge" ) {
-    showGameSettings.value = true;
-    quizOptions.splice( 0, quizOptions.length, { question: "Make your choices" } );
-    return;
-  }
-
-  gameModeSelected.value = true;
-}
-
-
-function handleNextQuestion ( answerOption: string, selectedRightAnswer: boolean ): void {
-
-  // What is gameMode?
-  if ( !gameModeSelected.value ){
-  } handleGameModeSelection( answerOption );
-
-  // Questions from db fetched
-  if ( queryLoaded.value ) {
-
-    if ( answeredQuestionsArr.value ) {
-      pauseTimer.value = true;
-      // Add string to arr to indicate correct or wrongly answered question
-      answeredQuestionsArr.value[currentIndex.value] = selectedRightAnswer ? "correct" : "wrong";
-    }
-
-    waitAndRunNextQuestion();
-  }
-}
-
-async function waitAndRunNextQuestion (): Promise<void> {
-  await new Promise( resolve => setTimeout( resolve, 1250 ) ); // Wait for 3 seconds
-
-  // Run the nextQuestion() function
-  nextQuestion();
-
-  // Update the visible value to false
-  visible.value = false;
-}
-
-function createStringArray ( num: number ): string[] {
-  if ( typeof num !== "number" || !Number.isInteger( num ) || num < 0 ) {
-    throw new Error( "Input must be a non-negative integer" );
-  }
-
-  return Array( num ).fill( "" );
-}
-
-function closeErrorMsg (): void  {
+const handleErrorButtonClick = (): void => {
   console.log( "closing error message" );
   errorHappened.value = false;
+};
+
+const resetGame = (): void => {
+  console.log( "reloading page" );
+  window.location.reload();
 };
 
 </script>
 
 <style scoped lang="less">
-
-.error-container {
-  position: absolute;
-  top: 0;
-  right: 0;
-  text-align: center;
-  background-color: rgb(18, 27, 38);
-  padding: 1rem 1.75rem;
-  border-radius: var(--border-radius);
-  box-shadow: var(--box-shadow);
-  width: 100%;
-  max-width: 20rem;
-
-  .error__title {
-    color: var(--color-incorrect);
-    font-weight: 700;
-    letter-spacing: 1px;
-    font-size: 1.2rem;
-    //text-transform: uppercase;
-  }
-}
-
-
-.wrapper {
-  position: relative;
-  display: flex;
-  justify-content: center; /* Horizontally center the container */
-  align-items: center; /* Vertically center the container */
-flex-direction: column;
-  height: 100%;
-  overflow: hidden;
-}
-
-.main-container {
-  width: 100%;
-  max-width: 60rem;
-  min-height: 31.25rem;
-  background-color: var(--color-main-container);
-  padding: 2rem;
-  border-radius: var(--border-radius);
-  box-shadow: var(--box-shadow);
-
-
-  .buttons-container {
+  .wrapper {
+    position: relative;
     display: flex;
-    justify-content: end;
-    align-items: center;
-    gap: 2rem;
+    justify-content: center; /* Horizontally center the container */
+    align-items: center; /* Vertically center the container */
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
   }
-
-}
-
-/* --- TRANSITION --- */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease-in-out;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-
-
-.slide-fade-enter-from {
-  opacity: 0;
-  transform: translateY(100%);
-}
-
-.slide-fade-leave-to {
-  opacity: 0;
-  transform: translateY(-100%);
-}
-
-.slide-fade-enter-active,
-.slide-fade-leave-active {
-  transition: opacity 0.3s, transform 0.3s;
-}
-
-
-.slide-enter-active,
-.slide-leave-active {
-  transition: opacity 0.3s, transform 0.3s;
-}
-
-.slide-enter-from {
-  opacity: 0;
-  transform: translateX(100%);
-}
-
-.slide-leave-to {
-  opacity: 0;
-  transform: translateX(-100%);
-}
 
 </style>
+
+
+
+
+
+
