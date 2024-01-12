@@ -1,23 +1,27 @@
 <template>
-  <div class="answers-container">
+  <Transition name="slide" @after-leave="props.onAfterLeave">
+    <div v-if="props.isVisible">
+      <div class="answers-container">
 
-    <div
-      v-for="(answerOption, index) in props.answerOptions.options"
-      :key="answerLabels[index]"
-      @click="selectAnswer(answerOption)"
-      class="answer"
-      :class="['answer-' + answerLabels[index], getAnswerStatusClass(answerOption)]"
-    >
-      <Transition name="slide-up" mode="out-in">
-        <p class="answer--label" v-if="shouldLabelShow(answerOption)">{{ answerLabels[index] }},</p>
-        <IconComponent v-else :icon-name="getIconName(answerOption)" />
-      </Transition>
-      <Transition name="slide-up" mode="out-in">
-        <p class="answer--option" v-if="props.loading">...loading</p>
-        <p class="answer--option" v-else v-html="answerOption"></p>
-      </Transition>
+        <div
+          v-for="(answerOption, index) in props.answerOptions.options"
+          :key="answerLabels[index]"
+          @click="selectAnswer(answerOption)"
+          class="answer"
+          :class="['answer-' + answerLabels[index], getAnswerStatusClass(answerOption)]"
+        >
+          <Transition name="slide-up" mode="out-in">
+            <p class="answer--label" v-if="shouldLabelShow(answerOption)">{{ answerLabels[index] }},</p>
+            <IconComponent v-else :icon-name="getIconName(answerOption)" />
+          </Transition>
+          <Transition name="slide-up" mode="out-in">
+            <p class="answer--option" v-if="props.loading">...loading</p>
+            <p class="answer--option" v-else v-html="answerOption"></p>
+          </Transition>
+        </div>
+      </div>
     </div>
-  </div>
+  </Transition>
 </template>
 
 <script setup lang="ts">
@@ -25,12 +29,13 @@ import type { QuestionType } from "@/types/QuestionType";
 import IconComponent from "./IconComponent.vue";
 
 import { ref } from "vue";
-import { gameSettings } from "@/data/options";
 
 type Props = {
   answerOptions: QuestionType;
   loading: boolean;
   gameStarted: boolean;
+  isVisible: boolean;
+  onAfterLeave: () => void;
 }
 
 const emits = defineEmits( [ "selectAnswer" ] );
@@ -238,4 +243,43 @@ function checkAnswerOption ( answerOption: string ): boolean[] {
   }
 }
 
+.slide-fade-enter-from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+
+  .slide-fade-leave-to {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+
+  .slide-fade-enter-active,
+  .slide-fade-leave-active {
+    transition: opacity 0.3s, transform 0.3s;
+  }
+
+
+  .slide-enter-active,
+  .slide-leave-active {
+    transition: opacity 0.3s, transform 0.3s;
+  }
+
+  .slide-enter-from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+
+  .slide-leave-to {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+
 </style>
+
+
+
+
+
+
+
+

@@ -1,9 +1,13 @@
 <template>
-  <div class="question-container">
-    <h2 class="question--subtitle">Question</h2>
-    <p class="question--title" v-if="loading">...loading</p>
-    <p class="question--title" v-else v-html="props.question"></p>
-  </div>
+  <Transition name="slide-fade" @after-leave="props.onAfterLeave">
+    <div v-if="props.isVisible">
+      <div class="question-container">
+        <h2 class="question--subtitle">Question</h2>
+        <p class="question--title" v-if="loading">...loading</p>
+        <p class="question--title" v-else v-html="props.question"></p>
+      </div>
+    </div>
+  </Transition>
 </template>
 
 <script setup lang="ts">
@@ -11,6 +15,8 @@
 type Props = {
   question: string;
   loading: boolean;
+  isVisible?: boolean
+  onAfterLeave: () => void
 }
 
 const props = defineProps<Props>();
@@ -36,6 +42,16 @@ const props = defineProps<Props>();
     font-weight: 700;
     letter-spacing: 0.5px;
   }
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 
 </style>

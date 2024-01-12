@@ -1,18 +1,24 @@
 <template>
-  <div v-show="!loading">
-    <div class="progress-bar-container">
-      <div class="progress-bar" :style="{ width: progress + '%'}" ></div>
+  <Transition name="slide-fade" @after-leave="props.onAfterLeave">
+    <div v-if="props.isVisible">
+      <div v-show="!loading">
+        <div class="progress-bar-container">
+          <div class="progress-bar" :style="{ width: progress + '%'}" ></div>
+        </div>
+      </div>
     </div>
-  </div>
+  </Transition>
 </template>
 
 <script setup lang="ts">
-import { ref, toRefs, watch, onBeforeUnmount } from "vue";
+import { ref, toRefs, watch, onMounted, onBeforeUnmount } from "vue";
 
 type Props = {
   timerDuration: number,
-  loading: boolean;
-  pauseTimer: boolean;
+  loading: boolean,
+  pauseTimer: boolean,
+  isVisible?: boolean
+  onAfterLeave: () => void
 }
 
 const props = defineProps<Props>();
@@ -61,12 +67,18 @@ const toggleTimer = (): void => {
   timerRunning.value = !timerRunning.value;
 };
 
+onMounted( () => {
+  console.log( "mounting and starting timer" );
+  startTimer();
+} );
+
 onBeforeUnmount( () => {
   clearInterval( interval.value! ); // Add "!" to assert non-null value
 } );
 
 
-startTimer();
+
+
 </script>
 
 <style scoped>
@@ -95,6 +107,16 @@ startTimer();
 
 .blue-border {
   border: 2px solid rgb(0, 123, 255);
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 
 </style>

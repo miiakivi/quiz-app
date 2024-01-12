@@ -1,26 +1,30 @@
 <template>
-  <div class="game-settings__container">
-    <SettingsOptions
-      :options="quizCategories"
-      title="category"
-      :type="SelectType.options"
-      :loading="loading"
-      @input="inputSelected"
-    />
+  <Transition name="slide" @after-leave="props.onAfterLeave">
+    <div v-if="props.isVisible">
+      <div class="game-settings__container">
+        <SettingsOptions
+          :options="quizCategories"
+          title="category"
+          :type="SelectType.options"
+          :loading="loading"
+          @input="inputSelected"
+        />
 
-    <SettingsOptions
-      :options="gameDifficulty"
-      title="difficulty"
-      :type="SelectType.options"
-      @input="inputSelected"
-    />
-    <SettingsOptions
-      title="amount"
-      :type="SelectType.number"
-      @input="inputSelected"
-    />
+        <SettingsOptions
+          :options="gameDifficulty"
+          title="difficulty"
+          :type="SelectType.options"
+          @input="inputSelected"
+        />
+        <SettingsOptions
+          title="amount"
+          :type="SelectType.number"
+          @input="inputSelected"
+        />
 
-  </div>
+      </div>
+    </div>
+  </Transition>
 </template>
 
 <script setup lang="ts">
@@ -34,11 +38,17 @@ import { GET_QUIZ_CATEGORIES } from "../../graphql/query";
 
 import type { SelectOptionType } from "../../types/SelectOptionType";
 
-  enum SelectType {
-    number,
-    options
-  }
+enum SelectType {
+  number,
+  options
+}
 
+type Props = {
+  isVisible: boolean,
+  onAfterLeave: () => void
+}
+
+const props = defineProps<Props>();
 const emits = defineEmits( [ "settingsSelected" ] );
 
 const { loading, error, result } = useQuery( GET_QUIZ_CATEGORIES );
@@ -110,4 +120,37 @@ const inputSelected = ( option: SelectOptionType, optionTitle: string ): void =>
   }
 
 
+  .slide-fade-enter-from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+
+  .slide-fade-leave-to {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+
+  .slide-fade-enter-active,
+  .slide-fade-leave-active {
+    transition: opacity 0.3s, transform 0.3s;
+  }
+
+
+  .slide-enter-active,
+  .slide-leave-active {
+    transition: opacity 0.3s, transform 0.3s;
+  }
+
+  .slide-enter-from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+
+  .slide-leave-to {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+
+
   </style>
+

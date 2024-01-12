@@ -12,7 +12,7 @@
 type Props = {
   currentCategory?: string,
   questionNumber: string,
-  isVisible: boolean
+  isVisible: boolean,
   onAfterLeave: () => void
 }
 
