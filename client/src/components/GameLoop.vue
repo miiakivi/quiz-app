@@ -31,7 +31,8 @@
         :loading="loading"
         :timer-duration="15"
         :is-visible="visible && gameStarted"
-        :on-after-leave="onAfterLeave"/>
+        :on-after-leave="onAfterLeave"
+        @game-over="handleGameOVer"/>
 
       <GameSettings
         v-if="visible && showGameSettings && !gameStarted"
@@ -92,7 +93,7 @@ type QuizQuestionArgs = {
   difficulty?: string,
 }
 
-const emits = defineEmits( [ "handleError" ] );
+const emits = defineEmits( [ "handleError", "gameOver" ] );
 
 const pauseTimer = ref( false );
 const gameStarted = ref( false );
@@ -144,6 +145,11 @@ watch( result, () => {
     handleQuestionsQueryFailure( responseCode );
   }
 } );
+
+const handleGameOVer = ( type: string ): void => {
+  console.log( "handle game over on game loop" );
+  emits( "gameOver", type );
+};
 
 const loadQuestionsFromDB = (): void => {
   //Load questions and start game

@@ -22,6 +22,7 @@ type Props = {
 }
 
 const props = defineProps<Props>();
+const emits = defineEmits( [ "gameOver" ] );
 
 const { pauseTimer } = toRefs( props );
 
@@ -54,6 +55,7 @@ const startTimer = (): void => {
 
 const endTimer = (): void => {
   console.log( "game over" );
+  emits( "gameOver", "loser" );
   clearInterval( interval.value! ); // Add "!" to assert non-null value
   // Timer has ended, perform any necessary actions here
 };
