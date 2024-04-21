@@ -9,7 +9,6 @@
     <GameLoop @game-over="handleGameOver" @handle-error="handleError"/>
   </div>
 
-
 </template>
 
 <script setup lang="ts">
