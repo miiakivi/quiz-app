@@ -19,7 +19,6 @@
         :current-category="quizOptions[currentIndex].category"
         :on-after-leave="onAfterLeave" />
 
-
       <QuizQuestion
         :question="quizOptions[currentIndex].question"
         :loading="loading"
@@ -33,7 +32,7 @@
         :timer-duration="5"
         :is-visible="visible && gameStarted"
         :on-after-leave="onAfterLeave"
-        @game-over="handleGameOVer"/>
+        @game-over="handleGameOver"/>
 
       <GameSettings
         v-if="visible && showGameSettings && !gameStarted"
@@ -47,7 +46,7 @@
         :is-visible="visible"
         :on-after-leave="onAfterLeave"
         :answerOptions="quizOptions[currentIndex]"
-        @selectAnswer="handleNextQuestion"
+        @selectAnswer="processAnswerAndMoveToNextQuestion"
         :loading="loading"
         :game-started="isGameStarted()"/>
 
@@ -108,6 +107,8 @@ const visible = ref( true );
 const showGameSettings = ref( false );
 const gameModeSelected = ref( false );
 
+const lives = ref( 3 );
+
 // How many qiestions quiz has and has 'correct' or 'wrong' in a place already answered questions.
 const answeredQuestionsArr = ref<string[]>();
 
@@ -122,8 +123,6 @@ const { loading, error, result, load, refetch } = useLazyQuery( GET_QUESTIONS, {
 } );
 
 watch( error, () => {
-  //errorHappened.value = true;
-  //errorMsg.value = error.value ? error.value.message : "GraphQL Error!";
   emits( "handleError", error.value ? error.value.message : "GraphQL Error!" );
   console.error( "GraphQL error!", error.value?.message );
 } );
@@ -145,10 +144,9 @@ watch( result, () => {
   }
 } );
 
-const handleGameOVer = ( type: string ): void => {
-  console.log( "handle game over on game loop" );
-  emits( "gameOver", type );
-};
+watch( gameModeSelected, () => {
+  console.log( "gameModeSelected", gameModeSelected.value );
+} );
 
 const loadQuestionsFromDB = (): void => {
   //Load questions and start game
@@ -220,7 +218,6 @@ const nextQuestion = (): void => {
 };
 
 function handleGameModeSelection ( answer: string ): void {
-
   if ( answer === "Customize your challenge" ) {
     showGameSettings.value = true;
     quizOptions.splice( 0, quizOptions.length, { question: "Make your choices" } );
@@ -230,28 +227,52 @@ function handleGameModeSelection ( answer: string ): void {
   gameModeSelected.value = true;
 }
 
+function processAnswerAndMoveToNextQuestion ( answerOption: string, selectedRightAnswer: boolean ): void {
 
-function handleNextQuestion ( answerOption: string, selectedRightAnswer: boolean ): void {
+  // Check if game mode is selected
+  if ( !gameModeSelected.value ) {
+    handleGameModeSelection( answerOption );
+    //return; // Exit the function if game mode is not selected
+  }
 
-  // What is gameMode?
-  if ( !gameModeSelected.value ){
-  } handleGameModeSelection( answerOption );
+  // Check if questions are loaded from the database
+  if ( queryLoaded.value && answeredQuestionsArr.value ) {
+    // Pause timer for processing the answer
+    pauseTimer.value = true;
 
-  // Questions from db fetched
-  if ( queryLoaded.value ) {
-
-    if ( answeredQuestionsArr.value ) {
-      pauseTimer.value = true;
-      // Add string to arr to indicate correct or wrongly answered question
-      answeredQuestionsArr.value[currentIndex.value] = selectedRightAnswer ? "correct" : "wrong";
+    // Update the answered questions array based on the selected answer
+    if ( selectedRightAnswer ) {
+      answeredQuestionsArr.value[currentIndex.value] = "correct";
+      waitAndRunNextQuestion(); // Move to the next question
+    } else {
+      answeredQuestionsArr.value[currentIndex.value] = "wrong";
+      handleWrongAnswer(); // Handle wrong answer if selected answer is wrong
     }
 
-    waitAndRunNextQuestion();
   }
 }
 
+
+function handleWrongAnswer (): void {
+  // Check if there are lives left
+  if ( lives.value >= 1 ) {
+    // If there are lives left, decrement
+    lives.value -= 1;
+    // Continue to the next question
+    waitAndRunNextQuestion();
+  } else {
+    // If no lives left, handle game over
+    handleGameOver( "loser" );
+  }
+}
+
+async function handleGameOver ( type: string ): Promise<void> {
+  await new Promise( resolve => setTimeout( resolve, 250 ) );
+  emits( "gameOver", type );
+};
+
 async function waitAndRunNextQuestion (): Promise<void> {
-  await new Promise( resolve => setTimeout( resolve, 1250 ) ); // Wait for 3 seconds
+  await new Promise( resolve => setTimeout( resolve, 1250 ) ); // Wait for 1.25 seconds
 
   // Run the nextQuestion() function
   nextQuestion();
@@ -271,9 +292,6 @@ function createStringArray ( num: number ): string[] {
 </script>
 
   <style scoped lang="less">
-
-
-
   .main-container {
     width: 100%;
     max-width: 60rem;
@@ -292,48 +310,4 @@ function createStringArray ( num: number ): string[] {
     }
 
   }
-
-  /* --- TRANSITION --- */
-  .fade-enter-active,
-  .fade-leave-active {
-    transition: opacity 0.3s ease-in-out;
-  }
-
-  .fade-enter-from,
-  .fade-leave-to {
-    opacity: 0;
-  }
-
-
-  .slide-fade-enter-from {
-    opacity: 0;
-    transform: translateY(100%);
-  }
-
-  .slide-fade-leave-to {
-    opacity: 0;
-    transform: translateY(-100%);
-  }
-
-  .slide-fade-enter-active,
-  .slide-fade-leave-active {
-    transition: opacity 0.3s, transform 0.3s;
-  }
-
-
-  .slide-enter-active,
-  .slide-leave-active {
-    transition: opacity 0.3s, transform 0.3s;
-  }
-
-  .slide-enter-from {
-    opacity: 0;
-    transform: translateX(100%);
-  }
-
-  .slide-leave-to {
-    opacity: 0;
-    transform: translateX(-100%);
-  }
-
   </style>

@@ -11,20 +11,16 @@
 </template>
 
 <script setup lang="ts">
-
 type Props = {
-  question: string;
-  loading: boolean;
+  question: string
+  loading: boolean
   isVisible?: boolean
   onAfterLeave: () => void
 }
 
-const props = defineProps<Props>();
-
-
+const props = defineProps<Props>()
 </script>
 <style scoped lang="less">
-
 .question-container {
   padding: 1.5rem;
   border: var(--border-width) solid var(--color-main-border);
@@ -53,5 +49,4 @@ const props = defineProps<Props>();
 .fade-leave-to {
   opacity: 0;
 }
-
 </style>

@@ -60,15 +60,6 @@ const endTimer = (): void => {
   // Timer has ended, perform any necessary actions here
 };
 
-const toggleTimer = (): void => {
-  if ( timerRunning.value ) {
-    clearInterval( interval.value! );
-  } else {
-    startTimer();
-  }
-  timerRunning.value = !timerRunning.value;
-};
-
 onMounted( () => {
   console.log( "mounting and starting timer" );
   startTimer();
@@ -77,9 +68,6 @@ onMounted( () => {
 onBeforeUnmount( () => {
   clearInterval( interval.value! ); // Add "!" to assert non-null value
 } );
-
-
-
 
 </script>
 

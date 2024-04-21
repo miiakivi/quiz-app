@@ -98,13 +98,14 @@ const handleOptionClick = ( option: SelectOptionType ): void => {
     border-radius: var(--border-radius);
     border: var(--border-width) solid var(--color-pink);
     cursor: pointer;
-    padding: 0.75rem;
+    padding: 0.5rem 0.75rem;
     transition: all 0.2s ease-in-out;
 
     p {
       text-transform: uppercase;
       color: var(--color-pink);
       font-weight: 900;
+      font-size: 0.85rem;
       letter-spacing: 1px;
       transition: all 0.2s ease-in-out;
     }

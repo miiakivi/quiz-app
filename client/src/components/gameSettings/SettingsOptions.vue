@@ -111,13 +111,15 @@ input[type=number]::-webkit-outer-spin-button {
   gap: 0.5rem;
 }
 
+
+
 .select-container {
+  margin-top: 1.5rem;
   width: 100%;
-  margin: 1.5rem 0;
-  //max-width: 15rem;
+
 
   .select-container__title {
-    font-size: 1.2rem;
+    font-size: 1rem;
     text-transform: capitalize;
     font-weight: 700;
     letter-spacing: 0.5px;
@@ -161,25 +163,24 @@ input[type=number]::-webkit-outer-spin-button {
   */
 
 
-  .dropdown__title, .select-amount__container {
-      position: relative;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-radius: var(--border-radius);
-      border: var(--border-width) solid var(--color-pink);
-      cursor: pointer;
-      padding: 0.75rem;
-      transition: all 0.2s ease-in-out;
+  .select-amount__container {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: var(--border-radius);
+    border: var(--border-width) solid var(--color-pink);
+    cursor: pointer;
+    padding: 0.75rem;
+    transition: all 0.2s ease-in-out;
   }
-
 
   .select-amount__container {
     width: 5rem;
     text-align: center;
     background-color: var(--color-main-container);
     color: var(--color-pink);
-    font-size: 1.2rem;
+    font-size: 1rem;
     text-transform: uppercase;
     font-weight: 900;
     letter-spacing: 1px;
@@ -200,22 +201,6 @@ input[type=number]::-webkit-outer-spin-button {
 
   }
 
-    .dropdown__title {
-
-      p {
-        text-transform: uppercase;
-        color: var(--color-pink);
-        font-weight: 900;
-        letter-spacing: 1px;
-        transition: all 0.2s ease-in-out;
-      }
-
-      svg {
-        stroke: var(--color-pink);
-        transition: all 0.2s ease-in-out;
-
-      }
-  }
 
   .dropdown__options {
     border-radius: var(--border-radius);

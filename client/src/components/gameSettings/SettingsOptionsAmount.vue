@@ -89,17 +89,17 @@ const handleAmountSelected = (): void => {
       line-height: 47px;
       */
 
-      .dropdown__title, .select-amount__container {
-          position: relative;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          border-radius: var(--border-radius);
-          border: var(--border-width) solid var(--color-pink);
-          cursor: pointer;
-          padding: 0.75rem;
-          transition: all 0.2s ease-in-out;
-      }
+    .dropdown__title, .select-amount__container {
+      position: relative;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: var(--border-radius);
+      border: var(--border-width) solid var(--color-pink);
+      cursor: pointer;
+      padding: 0.5rem 0.75rem;
+      transition: all 0.2s ease-in-out;
+    }
 
 
       .select-amount__container {
@@ -107,7 +107,7 @@ const handleAmountSelected = (): void => {
         text-align: center;
         background-color: var(--color-main-container);
         color: var(--color-pink);
-        font-size: 1.2rem;
+        font-size: 1rem;
         text-transform: uppercase;
         font-weight: 900;
         letter-spacing: 1px;

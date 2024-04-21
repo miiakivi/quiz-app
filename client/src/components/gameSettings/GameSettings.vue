@@ -21,7 +21,6 @@
           :type="SelectType.number"
           @input="inputSelected"
         />
-
       </div>
     </div>
   </Transition>
